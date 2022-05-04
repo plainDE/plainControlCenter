@@ -14,9 +14,11 @@
 #include <QDebug>
 
 #include "panes/appearance.h"
+#include "panes/autostart.h"
+#include "panes/panel.h"
+#include "panes/applets.h"
 
-QJsonObject currentConfig;
-QHash<QString,QJsonValue> newConfig;
+QJsonObject config;
 QFont controlCenterFont;
 
 struct Entry {
@@ -36,19 +38,34 @@ void readConfig() {
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     data = file.readAll();
     file.close();
-    currentConfig = QJsonDocument::fromJson(data.toUtf8()).object();
+    config = QJsonDocument::fromJson(data.toUtf8()).object();
 }
 
 void createUI() {
     QWidget* controlCenter = new QWidget;
+    controlCenter->setObjectName("controlCenter");
 
     // Geometry
     short width = 400, height = 500;
     controlCenter->setGeometry(250, 250, width, height);
 
+    // Style
+    if (config["theme"] == "light") {
+        QFile stylesheetReader(":/styles/general-light.qss");
+        stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
+        QTextStream styleSheet(&stylesheetReader);
+        controlCenter->setStyleSheet(styleSheet.readAll());
+    }
+    else {
+        QFile stylesheetReader(":/styles/general-dark.qss");
+        stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
+        QTextStream styleSheet(&stylesheetReader);
+        controlCenter->setStyleSheet(styleSheet.readAll());
+    }
+
     // Set font
-    controlCenterFont.setFamily(currentConfig["fontFamily"].toString());
-    controlCenterFont.setPointSize(currentConfig["fontSize"].toInt());
+    controlCenterFont.setFamily(config["fontFamily"].toString());
+    controlCenterFont.setPointSize(config["fontSize"].toInt());
     controlCenter->setFont(controlCenterFont);
 
 
@@ -58,44 +75,68 @@ void createUI() {
     controlCenter->setLayout(layout);
 
     QListWidget* entriesListWidget = new QListWidget;
-    // Appearance - icons, font, theme, panel height
+    entriesListWidget->setStyleSheet("QListView::item:selected { background-color: " + \
+                                     config["accent"].toString() + \
+                                     "; color: #ffffff };");
+
     // Sound - play startup sound, alsa, pulseaudio
 
     Entry entries[12] = {
-                            {"Network", QIcon::fromTheme("preferences-system-network")},
+                            //{"Network", QIcon::fromTheme("preferences-system-network")},
                             {"Appearance", QIcon::fromTheme("preferences-desktop-theme")},
-                            {"Sound", QIcon::fromTheme("audio-volume-high")},
-                            {"Display", QIcon::fromTheme("video-display")},
-                            {"Keyboard", QIcon::fromTheme("preferences-desktop-keyboard")},
-                            {"Date & Time", QIcon::fromTheme("x-office-calendar")},
-                            {"Language", QIcon::fromTheme("preferences-desktop-locale")},
-                            {"Autostart", QIcon::fromTheme("system-run")},
-                            {"Applets", QIcon::fromTheme("applications-utilities")},
-                            {"Developer settings", QIcon::fromTheme("utilities-terminal")},
-                            {"Default applications", QIcon::fromTheme("emblem-default")},
-                            {"About", QIcon("/usr/share/plainDE/icon.png")}
+                            //{"Sound", QIcon::fromTheme("audio-volume-high")},
+                            //{"Display", QIcon::fromTheme("video-display")},
+                            //{"Keyboard", QIcon::fromTheme("preferences-desktop-keyboard")},
+                            //{"Date & Time", QIcon::fromTheme("x-office-calendar")},
+                            //{"Language", QIcon::fromTheme("preferences-desktop-locale")},
+                            {"Autostart", QIcon::fromTheme("applications-utilities")},
+                            {"Panel", QIcon::fromTheme("panel")},
+                            {"Applets", QIcon::fromTheme("panel-applets")},  // cs-extensions
+                            //{"Developer settings", QIcon::fromTheme("utilities-terminal")},
+                            //{"Default applications", QIcon::fromTheme("emblem-default")},
+                            {"About", QIcon("/usr/share/plainDE/menuIcon.png")}
                         };
 
-    for (short i = 0; i < 12; ++i) {
+    for (short i = 0; i < 4; ++i) {
         entriesListWidget->addItem(entries[i].name);
         entriesListWidget->item(i)->setIcon(entries[i].icon);
     }
 
     // Widgets
     AppearancePane appearancePane;
+    AutostartPane autostartPane;
+    PanelPane panelPane;
+    AppletsPane appletsPane;
+
     QWidget* appearanceWidget = appearancePane.createUI(controlCenter);
+    QWidget* autostartWidget = autostartPane.createUI(controlCenter);
+    QWidget* panelWidget = panelPane.createUI(controlCenter);
+    QWidget* appletsWidget = appletsPane.createUI(controlCenter);
 
     QProcess* process = new QProcess(controlCenter);
 
     // Make connections
     controlCenter->connect(entriesListWidget, &QListWidget::itemDoubleClicked, controlCenter,
-               [entriesListWidget, process, controlCenter, appearanceWidget]() {
+               [entriesListWidget, process, controlCenter,
+                appearanceWidget, autostartWidget, panelWidget, appletsWidget]() {
         if (entriesListWidget->selectedItems()[0]->text() == "Appearance") {
              appearanceWidget->show();
              controlCenter->hide();
         }
+        else if (entriesListWidget->selectedItems()[0]->text() == "Autostart") {
+            autostartWidget->show();
+            controlCenter->hide();
+        }
+        else if (entriesListWidget->selectedItems()[0]->text() == "Panel") {
+            panelWidget->show();
+            controlCenter->hide();
+        }
+        else if (entriesListWidget->selectedItems()[0]->text() == "Applets") {
+            appletsWidget->show();
+            controlCenter->hide();
+        }
         else if (entriesListWidget->selectedItems()[0]->text() == "About") {
-             process->start("plainAbout");
+            process->start("plainAbout");
         }
     });
 
@@ -106,7 +147,7 @@ void createUI() {
 
 settings::settings(QWidget *parent): QWidget(parent) {
     readConfig();
-    QIcon::setThemeName(currentConfig["iconTheme"].toString());
+    QIcon::setThemeName(config["iconTheme"].toString());
     createUI();
 }
 

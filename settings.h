@@ -2,6 +2,7 @@
 #define SETTINGS_H
 
 #include <QWidget>
+#include <QJsonObject>
 
 class settings : public QWidget
 {
@@ -10,5 +11,6 @@ class settings : public QWidget
 public:
     settings(QWidget *parent = nullptr);
     ~settings();
+
 };
 #endif // SETTINGS_H

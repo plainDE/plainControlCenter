@@ -2,7 +2,7 @@
 #include "../settings.h"
 #include "../pane.h"
 
-QJsonObject config;
+QJsonObject appearancePaneConfig;
 
 
 void AppearancePane::readConfig() {
@@ -14,7 +14,7 @@ void AppearancePane::readConfig() {
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     data = file.readAll();
     file.close();
-    config = QJsonDocument::fromJson(data.toUtf8()).object();
+    appearancePaneConfig = QJsonDocument::fromJson(data.toUtf8()).object();
 }
 
 void AppearancePane::prepareUI(QListWidget* iconThemeListWidget) {
@@ -36,80 +36,96 @@ void AppearancePane::setCurrentSettings(QListWidget* iconThemeListWidget,
                                         QSpinBox* fontSizeSpinBox,
                                         QRadioButton* lightRadioButton,
                                         QRadioButton* darkRadioButton,
-                                        QSpinBox* panelHeightSpinBox) {
+                                        QLineEdit* accentLineEdit) {
     // Icon theme
     QString currentRowData = "";
     short i = 0;
-    while (currentRowData != config["iconTheme"].toString()) {
-        currentRowData = iconThemeListWidget->item(i)->text();
-        ++i;
+
+    if (!appearancePaneConfig["iconTheme"].toString().isEmpty()) {
+        while (currentRowData != appearancePaneConfig["iconTheme"].toString()) {
+            currentRowData = iconThemeListWidget->item(i)->text();
+            ++i;
+        }
+        iconThemeListWidget->setCurrentRow(i-1);
     }
-    iconThemeListWidget->setCurrentRow(i-1);
 
     // Font
     QFont currentFont;
-    currentFont.setFamily(config["fontFamily"].toString());
+    currentFont.setFamily(appearancePaneConfig["fontFamily"].toString());
     fontFamilyComboBox->setCurrentFont(currentFont);
-    fontSizeSpinBox->setValue(config["fontSize"].toInt());
+    fontSizeSpinBox->setValue(appearancePaneConfig["fontSize"].toInt());
 
     // Theme
-    if (config["theme"] == "light") {
+    if (appearancePaneConfig["theme"] == "light") {
         lightRadioButton->toggle();
     }
     else {
         darkRadioButton->toggle();
     }
 
-    // Panel height
-    panelHeightSpinBox->setValue(config["panelHeight"].toInt());
+    // Accent
+    accentLineEdit->setText(appearancePaneConfig["accent"].toString());
 }
 
 void AppearancePane::saveSettings(QListWidget* iconThemeListWidget,
                                   QFontComboBox* fontFamilyComboBox,
                                   QSpinBox* fontSizeSpinBox,
                                   QRadioButton* lightRadioButton,
-                                  QSpinBox* panelHeightSpinBox) {
+                                  QLineEdit* accentLineEdit) {
     // Icon theme
-    config["iconTheme"] = QJsonValue(iconThemeListWidget->currentItem()->text());
+    appearancePaneConfig["iconTheme"] = QJsonValue(iconThemeListWidget->currentItem()->text());
 
     // Font
-    config["fontFamily"] = QJsonValue(fontFamilyComboBox->currentFont().family());
-    config["fontSize"] = QJsonValue(fontSizeSpinBox->value());
+    appearancePaneConfig["fontFamily"] = QJsonValue(fontFamilyComboBox->currentFont().family());
+    appearancePaneConfig["fontSize"] = QJsonValue(fontSizeSpinBox->value());
 
     // Theme
     if (lightRadioButton->isChecked()) {
-        config["theme"] = "light";
+        appearancePaneConfig["theme"] = "light";
     }
     else {
-        config["theme"] = "dark";
+        appearancePaneConfig["theme"] = "dark";
     }
 
-    // Panel height
-    config["panelHeight"] = QJsonValue(panelHeightSpinBox->value());
+    // Accent
+    appearancePaneConfig["accent"] = QJsonValue(accentLineEdit->text());
 
-    Pane::saveConfig(config);
-
-    QMessageBox msg;
-    msg.setWindowTitle("Restart plainDE");
-    msg.setText("Changes will take effect after restarting plainDE");
-    msg.setStandardButtons(QMessageBox::Ok);
-    msg.setIcon(QMessageBox::Information);
-    msg.exec();
+    Pane::saveConfig(appearancePaneConfig);
 }
 
 QWidget* AppearancePane::createUI(QWidget* controlCenter) {
     readConfig();
 
+    // UI
     QWidget* appearancePane = new QWidget;
+    appearancePane->setObjectName("appearancePane");
     QVBoxLayout* layout = new QVBoxLayout;
     layout->setContentsMargins(4, 4, 4, 4);
     appearancePane->setLayout(layout);
+
+    // Style
+    if (appearancePaneConfig["theme"] == "light") {
+        QFile stylesheetReader(":/styles/general-light.qss");
+        stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
+        QTextStream styleSheet(&stylesheetReader);
+        appearancePane->setStyleSheet(styleSheet.readAll());
+    }
+    else {
+        QFile stylesheetReader(":/styles/general-dark.qss");
+        stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
+        QTextStream styleSheet(&stylesheetReader);
+        appearancePane->setStyleSheet(styleSheet.readAll());
+    }
+
+    QFont paneFont;
+    paneFont.setFamily(appearancePaneConfig["fontFamily"].toString());
+    paneFont.setPointSize(appearancePaneConfig["fontSize"].toInt());
+    appearancePane->setFont(paneFont);
 
     short width = 400, height = 500;
     appearancePane->setGeometry(250, 250, width, height);
 
     QPushButton* backPushButton = new QPushButton;
-    QIcon::setThemeName(config["iconTheme"].toString());
     backPushButton->setIcon(QIcon::fromTheme("go-previous"));
     backPushButton->setText(" Back");
     appearancePane->layout()->addWidget(backPushButton);
@@ -118,6 +134,9 @@ QWidget* AppearancePane::createUI(QWidget* controlCenter) {
     QListWidget* iconThemeListWidget = new QListWidget;
     appearancePane->layout()->addWidget(iconThemeLabel);
     appearancePane->layout()->addWidget(iconThemeListWidget);
+    iconThemeListWidget->setStyleSheet("QListView::item:selected { background-color: " + \
+                                       appearancePaneConfig["accent"].toString() + \
+                                       "; color: #ffffff };");
 
     QLabel* fontLabel = new QLabel("Font");
     QFontComboBox* fontFamilyComboBox = new QFontComboBox;
@@ -133,10 +152,13 @@ QWidget* AppearancePane::createUI(QWidget* controlCenter) {
     appearancePane->layout()->addWidget(lightRadioButton);
     appearancePane->layout()->addWidget(darkRadioButton);
 
-    QLabel* panelHeightLabel = new QLabel("Panel height");
-    QSpinBox* panelHeightSpinBox = new QSpinBox;
-    appearancePane->layout()->addWidget(panelHeightLabel);
-    appearancePane->layout()->addWidget(panelHeightSpinBox);
+    QColorDialog* colorDialog = new QColorDialog;
+    QLabel* accentLabel = new QLabel("Accent");
+    QLineEdit* accentLineEdit = new QLineEdit;
+    QPushButton* setAccentPushButton = new QPushButton("Choose accent...");
+    appearancePane->layout()->addWidget(accentLabel);
+    appearancePane->layout()->addWidget(accentLineEdit);
+    appearancePane->layout()->addWidget(setAccentPushButton);
 
     QPushButton* revertPushButton = new QPushButton("Revert");
     QPushButton* savePushButton = new QPushButton("Save");
@@ -149,35 +171,42 @@ QWidget* AppearancePane::createUI(QWidget* controlCenter) {
                        fontSizeSpinBox,
                        lightRadioButton,
                        darkRadioButton,
-                       panelHeightSpinBox);
+                       accentLineEdit);
 
 
     // Make connections
     appearancePane->connect(savePushButton, &QPushButton::clicked, appearancePane,
                   [this, iconThemeListWidget, fontFamilyComboBox, fontSizeSpinBox,
-                   lightRadioButton, panelHeightSpinBox]() {
+                   lightRadioButton, accentLineEdit]() {
         saveSettings(iconThemeListWidget,
                      fontFamilyComboBox,
                      fontSizeSpinBox,
                      lightRadioButton,
-                     panelHeightSpinBox);
+                     accentLineEdit);
     });
 
     appearancePane->connect(revertPushButton, &QPushButton::clicked, appearancePane,
                   [this, iconThemeListWidget, fontFamilyComboBox, fontSizeSpinBox,
-                   lightRadioButton, darkRadioButton, panelHeightSpinBox]() {
+                   lightRadioButton, darkRadioButton, accentLineEdit]() {
         setCurrentSettings(iconThemeListWidget,
                            fontFamilyComboBox,
                            fontSizeSpinBox,
                            lightRadioButton,
                            darkRadioButton,
-                           panelHeightSpinBox);
+                           accentLineEdit);
     });
 
     appearancePane->connect(backPushButton, &QPushButton::clicked, appearancePane,
                   [appearancePane, controlCenter]() {
         controlCenter->show();
         appearancePane->hide();
+    });
+
+    appearancePane->connect(setAccentPushButton, &QPushButton::clicked, appearancePane,
+                            [colorDialog, accentLineEdit]() {
+        if (colorDialog->exec() == QColorDialog::Accepted) {
+            accentLineEdit->setText(QVariant(colorDialog->currentColor()).toString());
+        }
     });
 
 

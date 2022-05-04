@@ -15,14 +15,14 @@ public:
                             QSpinBox* fontSizeSpinBox,
                             QRadioButton* lightRadioButton,
                             QRadioButton* darkRadioButton,
-                            QSpinBox* panelHeightSpinBox);
+                            QLineEdit* accentLineEdit);
     void prepareUI(QListWidget* iconThemesListWidget);
     void saveSettings(QListWidget* iconThemesListWidget,
                       QFontComboBox* fontFamilyComboBox,
                       QSpinBox* fontSizeSpinBox,
                       QRadioButton* lightRadioButton,
-                      QSpinBox* panelHeightSpinBox);
-    void makeConnections(AppearancePane* pane);
+                      QLineEdit* accentLineEdit);
+
 };
 
 #endif // APPEARANCEPANE_H

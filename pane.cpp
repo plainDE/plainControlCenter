@@ -8,4 +8,12 @@ void Pane::saveConfig(QJsonObject config) {
     QFile jsonFile(configPath);
     jsonFile.open(QFile::WriteOnly);
     jsonFile.write(doc.toJson(QJsonDocument::Indented));
+    jsonFile.close();
+
+    QMessageBox msg;
+    msg.setWindowTitle("Restart plainDE");
+    msg.setText("Changes will take effect after restarting plainDE");
+    msg.setStandardButtons(QMessageBox::Ok);
+    msg.setIcon(QMessageBox::Information);
+    msg.exec();
 }

@@ -12,14 +12,27 @@ SOURCES += \
     main.cpp \
     pane.cpp \
     panes/appearance.cpp \
+    panes/appletPanes/appmenu.cpp \
+    panes/appletPanes/datetime.cpp \
+    panes/applets.cpp \
+    panes/autostart.cpp \
+    panes/panel.cpp \
     settings.cpp
 
 HEADERS += \
     pane.h \
     panes/appearance.h \
+    panes/appletPanes/appmenu.h \
+    panes/appletPanes/datetime.h \
+    panes/applets.h \
+    panes/autostart.h \
+    panes/panel.h \
     settings.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    styles.qrc
