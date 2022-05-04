@@ -1,0 +1,3 @@
+QWidget#panel, QWidget#panelPane, QWidget#autostartPane, QWidget#appletsPane, QWidget#appearancePane, QWidget#datetimeAppletPane, QWidget#appMenuAppletPane {
+    background-color: qlineargradient(spread:pad, x1:0.502, y1:0, x2:0.507, y2:1, stop:0 rgba(255, 255, 255, 255),stop:1 rgba(207, 207, 207, 255));
+}
