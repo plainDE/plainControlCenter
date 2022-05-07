@@ -131,6 +131,7 @@ QWidget* PanelPane::createUI(QWidget* controlCenter) {
                        [panelPane, controlCenter]() {
         controlCenter->show();
         panelPane->hide();
+        delete panelPane;
     });
 
     panelPane->connect(revertPushButton, &QPushButton::clicked, panelPane,

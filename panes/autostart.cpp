@@ -187,6 +187,7 @@ QWidget* AutostartPane::createUI(QWidget* controlCenter) {
                            [autostartPane, controlCenter]() {
         controlCenter->show();
         autostartPane->hide();
+        delete autostartPane;
     });
 
     autostartPane->connect(addSelectedPushButton, &QPushButton::clicked, autostartPane,

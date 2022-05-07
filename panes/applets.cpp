@@ -147,11 +147,11 @@ QWidget* AppletsPane::createUI(QWidget* controlCenter) {
     prepareUI(allAppletsListWidget, enabledAppletsListWidget);
 
     // Applets panes
-    AppMenuAppletPane appMenuAppletPane;
-    DatetimeAppletPane datetimeAppletPane;
+    AppMenuAppletPane* appMenuAppletPane = new AppMenuAppletPane;
+    DatetimeAppletPane* datetimeAppletPane = new DatetimeAppletPane;
 
-    QWidget* appMenuAppletWidget = appMenuAppletPane.createUI();
-    QWidget* datetimeAppletWidget = datetimeAppletPane.createUI();
+    QWidget* appMenuAppletWidget = appMenuAppletPane->createUI();
+    QWidget* datetimeAppletWidget = datetimeAppletPane->createUI();
 
 
     // Make connections
@@ -159,6 +159,7 @@ QWidget* AppletsPane::createUI(QWidget* controlCenter) {
                          [controlCenter, appletsPane]() {
         controlCenter->show();
         appletsPane->hide();
+        delete appletsPane;
     });
 
     appletsPane->connect(addEntryPushButton, &QPushButton::clicked, appletsPane,
@@ -172,12 +173,15 @@ QWidget* AppletsPane::createUI(QWidget* controlCenter) {
     });
 
     appletsPane->connect(customizePushButton, &QPushButton::clicked, appletsPane,
-                         [enabledAppletsListWidget, appMenuAppletWidget,
-                          datetimeAppletWidget]() {
+                         [enabledAppletsListWidget,
+                          appMenuAppletWidget, appMenuAppletPane,
+                          datetimeAppletWidget, datetimeAppletPane]()mutable {
         if (enabledAppletsListWidget->selectedItems()[0]->text() == "appmenu") {
+            appMenuAppletWidget = appMenuAppletPane->createUI();
             appMenuAppletWidget->show();
         }
         else if (enabledAppletsListWidget->selectedItems()[0]->text() == "datetime") {
+            datetimeAppletWidget = datetimeAppletPane->createUI();
             datetimeAppletWidget->show();
         }
         else {

@@ -200,6 +200,7 @@ QWidget* AppearancePane::createUI(QWidget* controlCenter) {
                   [appearancePane, controlCenter]() {
         controlCenter->show();
         appearancePane->hide();
+        delete appearancePane;
     });
 
     appearancePane->connect(setAccentPushButton, &QPushButton::clicked, appearancePane,
