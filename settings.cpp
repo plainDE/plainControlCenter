@@ -103,35 +103,43 @@ void createUI() {
     }
 
     // Widgets
-    AppearancePane appearancePane;
-    AutostartPane autostartPane;
-    PanelPane panelPane;
-    AppletsPane appletsPane;
+    AppearancePane* appearancePane = new AppearancePane;
+    AutostartPane* autostartPane = new AutostartPane;
+    PanelPane* panelPane = new PanelPane;
+    AppletsPane* appletsPane = new AppletsPane;
 
-    QWidget* appearanceWidget = appearancePane.createUI(controlCenter);
-    QWidget* autostartWidget = autostartPane.createUI(controlCenter);
-    QWidget* panelWidget = panelPane.createUI(controlCenter);
-    QWidget* appletsWidget = appletsPane.createUI(controlCenter);
+    QWidget* appearanceWidget = appearancePane->createUI(controlCenter);
+    QWidget* autostartWidget = autostartPane->createUI(controlCenter);
+    QWidget* panelWidget = panelPane->createUI(controlCenter);
+    QWidget* appletsWidget = appletsPane->createUI(controlCenter);
+
 
     QProcess* process = new QProcess(controlCenter);
 
     // Make connections
     controlCenter->connect(entriesListWidget, &QListWidget::itemDoubleClicked, controlCenter,
                [entriesListWidget, process, controlCenter,
-                appearanceWidget, autostartWidget, panelWidget, appletsWidget]() {
+                appearanceWidget, appearancePane,
+                autostartWidget, autostartPane,
+                panelWidget, panelPane,
+                appletsWidget, appletsPane]()mutable {
         if (entriesListWidget->selectedItems()[0]->text() == "Appearance") {
-             appearanceWidget->show();
-             controlCenter->hide();
+            appearanceWidget = appearancePane->createUI(controlCenter);
+            appearanceWidget->show();
+            controlCenter->hide();
         }
         else if (entriesListWidget->selectedItems()[0]->text() == "Autostart") {
+            autostartWidget = autostartPane->createUI(controlCenter);
             autostartWidget->show();
             controlCenter->hide();
         }
         else if (entriesListWidget->selectedItems()[0]->text() == "Panel") {
+            panelWidget = panelPane->createUI(controlCenter);
             panelWidget->show();
             controlCenter->hide();
         }
         else if (entriesListWidget->selectedItems()[0]->text() == "Applets") {
+            appletsWidget = appletsPane->createUI(controlCenter);
             appletsWidget->show();
             controlCenter->hide();
         }
