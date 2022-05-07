@@ -99,12 +99,24 @@ void AppMenuAppletPane::prepareUI(QListWidget* allAppsListWidget,
 
 void AppMenuAppletPane::setCurrentSettings(QLineEdit* buttonTextLineEdit,
                                            QLineEdit* buttonIconLineEdit,
-                                           QPushButton* previewButton) {
+                                           QPushButton* previewButton,
+                                           QCheckBox* useTriangularTabsCheckBox) {
     buttonTextLineEdit->setText(appMenuAppletConfig["menuText"].toString());
     buttonIconLineEdit->setText(appMenuAppletConfig["menuIcon"].toString());
 
     makePreview(previewButton, buttonTextLineEdit, LineEditType::Text);
     makePreview(previewButton, buttonIconLineEdit, LineEditType::Icon);
+
+    if (appMenuAppletConfig["appMenuTriangularTabs"].toBool()) {
+        if (!useTriangularTabsCheckBox->isChecked()) {
+            useTriangularTabsCheckBox->toggle();
+        }
+    }
+    else {
+        if (useTriangularTabsCheckBox->isChecked()) {
+            useTriangularTabsCheckBox->toggle();
+        }
+    }
 }
 
 void AppMenuAppletPane::addEntry(QListWidget* allAppsListWidget,
@@ -132,7 +144,8 @@ void AppMenuAppletPane::removeEntry(QListWidget* favAppsListWidget) {
 
 void AppMenuAppletPane::saveSettings(QLineEdit* buttonTextLineEdit,
                                      QLineEdit* buttonIconLineEdit,
-                                     QListWidget* favAppsListWidget) {
+                                     QListWidget* favAppsListWidget,
+                                     QCheckBox* useTriangularTabsCheckBox) {
     QStringList favApps;
 
     appMenuAppletConfig["menuText"] = buttonTextLineEdit->text();
@@ -143,6 +156,9 @@ void AppMenuAppletPane::saveSettings(QLineEdit* buttonTextLineEdit,
     }
 
     appMenuAppletConfig["favApps"] = QJsonValue::fromVariant(QVariant(favApps));
+
+    appMenuAppletConfig["appMenuTriangularTabs"] = QJsonValue(
+                                        useTriangularTabsCheckBox->isChecked());
 
     Pane::saveConfig(appMenuAppletConfig);
 }
@@ -215,13 +231,17 @@ QWidget* AppMenuAppletPane::createUI() {
     QPushButton* removeEntryPushButton = new QPushButton("Remove");
     appMenuAppletPane->layout()->addWidget(removeEntryPushButton);
 
+    QCheckBox* useTriangularTabsCheckBox = new QCheckBox("Use triangular tabs (uncheck only on light theme)");
+    appMenuAppletPane->layout()->addWidget(useTriangularTabsCheckBox);
+
     QPushButton* revertPushButton = new QPushButton("Revert");
     appMenuAppletPane->layout()->addWidget(revertPushButton);
 
     QPushButton* savePushButton = new QPushButton("Save");
     appMenuAppletPane->layout()->addWidget(savePushButton);
 
-    setCurrentSettings(buttonTextLineEdit, buttonIconLineEdit, previewButton);
+    setCurrentSettings(buttonTextLineEdit, buttonIconLineEdit,
+                       previewButton, useTriangularTabsCheckBox);
     prepareUI(allAppsListWidget, favAppsListWidget);
 
 
@@ -248,14 +268,18 @@ QWidget* AppMenuAppletPane::createUI() {
 
     appMenuAppletPane->connect(revertPushButton, &QPushButton::clicked, appMenuAppletPane,
                                [this, allAppsListWidget, favAppsListWidget, previewButton,
-                                buttonTextLineEdit, buttonIconLineEdit]() {
-        setCurrentSettings(buttonTextLineEdit, buttonIconLineEdit, previewButton);
+                                buttonTextLineEdit, buttonIconLineEdit,
+                                useTriangularTabsCheckBox]() {
+        setCurrentSettings(buttonTextLineEdit, buttonIconLineEdit, previewButton,
+                           useTriangularTabsCheckBox);
         prepareUI(allAppsListWidget, favAppsListWidget);
     });
 
     appMenuAppletPane->connect(savePushButton, &QPushButton::clicked, appMenuAppletPane,
-                               [this, buttonTextLineEdit, buttonIconLineEdit, favAppsListWidget]() {
-        saveSettings(buttonTextLineEdit, buttonIconLineEdit, favAppsListWidget);
+                               [this, buttonTextLineEdit, buttonIconLineEdit,
+                               favAppsListWidget, useTriangularTabsCheckBox]() {
+        saveSettings(buttonTextLineEdit, buttonIconLineEdit,
+                     favAppsListWidget, useTriangularTabsCheckBox);
     });
 
     return appMenuAppletPane;
