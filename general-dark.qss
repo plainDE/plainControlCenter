@@ -11,6 +11,7 @@ QPushButton, QLineEdit, QListWidget, QComboBox, QSpinBox {
     color: #f3f3f3;
 }
 
-QRadioButton, QCheckBox {
-    color: #f3f3f3;
+QRadioButton, QCheckBox, QRadioButton {
+    color: #f1f1f1;
 }
+
