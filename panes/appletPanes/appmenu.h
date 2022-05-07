@@ -23,10 +23,12 @@ public:
                    QListWidget* favAppsListWidget);
     void setCurrentSettings(QLineEdit* buttonTextLineEdit,
                             QLineEdit* buttonIconLineEdit,
-                            QPushButton* previewButton);
+                            QPushButton* previewButton,
+                            QCheckBox* useTriangularTabsCheckBox);
     void saveSettings(QLineEdit* buttonTextLineEdit,
                       QLineEdit* buttonIconLineEdit,
-                      QListWidget* favAppsListWidget);
+                      QListWidget* favAppsListWidget,
+                      QCheckBox* useTriangularTabsCheckBox);
     void makePreview(QPushButton* previewButton,
                      QLineEdit* lineEdit,
                      LineEditType lineEditType);
