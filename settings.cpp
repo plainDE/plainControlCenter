@@ -50,18 +50,10 @@ void createUI() {
     controlCenter->setGeometry(250, 250, width, height);
 
     // Style
-    if (config["theme"] == "light") {
-        QFile stylesheetReader(":/styles/general-light.qss");
-        stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
-        QTextStream styleSheet(&stylesheetReader);
-        controlCenter->setStyleSheet(styleSheet.readAll());
-    }
-    else {
-        QFile stylesheetReader(":/styles/general-dark.qss");
-        stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
-        QTextStream styleSheet(&stylesheetReader);
-        controlCenter->setStyleSheet(styleSheet.readAll());
-    }
+    QFile stylesheetReader("/usr/share/plainDE/styles/" + config["theme"].toString());
+    stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
+    QTextStream styleSheet(&stylesheetReader);
+    controlCenter->setStyleSheet(styleSheet.readAll());
 
     // Set font
     controlCenterFont.setFamily(config["fontFamily"].toString());

@@ -18,7 +18,9 @@ void PanelPane::readConfig() {
 void PanelPane::setCurrentSettings(QSpinBox* panelHeightSpinBox,
                                    QRadioButton* panelTopLocationRadioButton,
                                    QRadioButton* panelBottomLocationRadioButton,
-                                   QCheckBox* panelAnimationCheckBox) {
+                                   QCheckBox* panelAnimationCheckBox,
+                                   QCheckBox* expandPanelCheckBox,
+                                   QSpinBox* panelOffsetSpinBox) {
     panelHeightSpinBox->setValue(panelPaneConfig["panelHeight"].toInt());
     if (panelPaneConfig["panelLocation"].toString() == "top") {
         panelTopLocationRadioButton->toggle();
@@ -27,17 +29,24 @@ void PanelPane::setCurrentSettings(QSpinBox* panelHeightSpinBox,
         panelBottomLocationRadioButton->toggle();
     }
 
-    if (panelAnimationCheckBox->isChecked()) {
-        panelAnimationCheckBox->toggle();
+    panelAnimationCheckBox->setChecked(
+                panelPaneConfig["enableAnimation"].toBool());
+
+    if (panelPaneConfig["expandPanel"].toBool()) {
+        expandPanelCheckBox->setChecked(true);
+        panelOffsetSpinBox->setEnabled(false);
     }
-    if (panelPaneConfig["enableAnimation"].toBool()) {
-        panelAnimationCheckBox->toggle();
+    else {expandPanelCheckBox->setChecked(false);
+        panelOffsetSpinBox->setEnabled(true);
+        panelOffsetSpinBox->setValue(panelPaneConfig["xOffset"].toInt());
     }
 }
 
 void PanelPane::saveSettings(QSpinBox* panelHeightSpinBox,
                              QRadioButton* panelTopLocationRadioButton,
-                             QCheckBox* panelAnimationCheckBox) {
+                             QCheckBox* panelAnimationCheckBox,
+                             QCheckBox* expandPanelCheckBox,
+                             QSpinBox* panelOffsetSpinBox) {
     panelPaneConfig["panelHeight"] = QJsonValue(panelHeightSpinBox->value());
     if (panelTopLocationRadioButton->isChecked()) {
         panelPaneConfig["panelLocation"] = QJsonValue("top");
@@ -53,6 +62,15 @@ void PanelPane::saveSettings(QSpinBox* panelHeightSpinBox,
         panelPaneConfig["enableAnimation"] = QJsonValue(false);
     }
 
+    if (expandPanelCheckBox->isChecked()) {
+        panelPaneConfig["expandPanel"] = QJsonValue(true);
+    }
+    else {
+        panelPaneConfig["expandPanel"] = QJsonValue(false);
+    }
+
+    panelPaneConfig["xOffset"] = QJsonValue(panelOffsetSpinBox->value());
+
     Pane::saveConfig(panelPaneConfig);
 }
 
@@ -66,19 +84,11 @@ QWidget* PanelPane::createUI(QWidget* controlCenter) {
     layout->setContentsMargins(4, 4, 4, 4);
     panelPane->setLayout(layout);
 
-    // Style
-    if (panelPaneConfig["theme"] == "light") {
-        QFile stylesheetReader(":/styles/general-light.qss");
-        stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
-        QTextStream styleSheet(&stylesheetReader);
-        panelPane->setStyleSheet(styleSheet.readAll());
-    }
-    else {
-        QFile stylesheetReader(":/styles/general-dark.qss");
-        stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
-        QTextStream styleSheet(&stylesheetReader);
-        panelPane->setStyleSheet(styleSheet.readAll());
-    }
+    // Theme
+    QFile stylesheetReader("/usr/share/plainDE/styles/" + panelPaneConfig["theme"].toString());
+    stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
+    QTextStream styleSheet(&stylesheetReader);
+    panelPane->setStyleSheet(styleSheet.readAll());
 
     QFont paneFont;
     paneFont.setFamily(panelPaneConfig["fontFamily"].toString());
@@ -112,6 +122,21 @@ QWidget* PanelPane::createUI(QWidget* controlCenter) {
     panelPane->layout()->addWidget(panelAnimationLabel);
     panelPane->layout()->addWidget(panelAnimationCheckBox);
 
+    QLabel* panelExpansionLabel = new QLabel("Panel expansion");
+    panelPane->layout()->addWidget(panelExpansionLabel);
+
+    QCheckBox* expandPanelCheckBox = new QCheckBox("Expand panel");
+    panelPane->layout()->addWidget(expandPanelCheckBox);
+
+    QLabel* panelOffsetLabel = new QLabel("Panel X offset");
+    panelPane->layout()->addWidget(panelOffsetLabel);
+
+    QSpinBox* panelOffsetSpinBox = new QSpinBox;
+    panelOffsetSpinBox->setMinimum(0);
+    panelOffsetSpinBox->setMaximum(
+                QGuiApplication::primaryScreen()->size().width());
+    panelPane->layout()->addWidget(panelOffsetSpinBox);
+
     panelPane->layout()->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
 
     QPushButton* revertPushButton = new QPushButton("Revert");
@@ -123,7 +148,9 @@ QWidget* PanelPane::createUI(QWidget* controlCenter) {
     setCurrentSettings(panelHeightSpinBox,
                        panelTopLocationRadioButton,
                        panelBottomLocationRadioButton,
-                       panelAnimationCheckBox);
+                       panelAnimationCheckBox,
+                       expandPanelCheckBox,
+                       panelOffsetSpinBox);
 
 
     // Make connections
@@ -134,21 +161,37 @@ QWidget* PanelPane::createUI(QWidget* controlCenter) {
         delete panelPane;
     });
 
+    panelPane->connect(expandPanelCheckBox, &QCheckBox::toggled, panelPane,
+                       [expandPanelCheckBox, panelOffsetSpinBox]() {
+        if (expandPanelCheckBox->isChecked()) {
+            panelOffsetSpinBox->setEnabled(false);
+        }
+        else {
+            panelOffsetSpinBox->setEnabled(true);
+        }
+    });
+
     panelPane->connect(revertPushButton, &QPushButton::clicked, panelPane,
                        [this, panelHeightSpinBox, panelTopLocationRadioButton,
-                       panelBottomLocationRadioButton, panelAnimationCheckBox]() {
+                       panelBottomLocationRadioButton, panelAnimationCheckBox,
+                       expandPanelCheckBox, panelOffsetSpinBox]() {
         setCurrentSettings(panelHeightSpinBox,
                            panelTopLocationRadioButton,
                            panelBottomLocationRadioButton,
-                           panelAnimationCheckBox);
+                           panelAnimationCheckBox,
+                           expandPanelCheckBox,
+                           panelOffsetSpinBox);
     });
 
     panelPane->connect(savePushButton, &QPushButton::clicked, panelPane,
                        [this, panelHeightSpinBox, panelTopLocationRadioButton,
-                        panelAnimationCheckBox]() {
+                        panelAnimationCheckBox, expandPanelCheckBox,
+                        panelOffsetSpinBox]() {
         saveSettings(panelHeightSpinBox,
                      panelTopLocationRadioButton,
-                     panelAnimationCheckBox);
+                     panelAnimationCheckBox,
+                     expandPanelCheckBox,
+                     panelOffsetSpinBox);
     });
 
     return panelPane;

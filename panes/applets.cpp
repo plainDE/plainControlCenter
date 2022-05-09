@@ -91,19 +91,11 @@ QWidget* AppletsPane::createUI(QWidget* controlCenter) {
     layout->setContentsMargins(4, 4, 4, 4);
     appletsPane->setLayout(layout);
 
-    // Style
-    if (appletsPaneConfig["theme"] == "light") {
-        QFile stylesheetReader(":/styles/general-light.qss");
-        stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
-        QTextStream styleSheet(&stylesheetReader);
-        appletsPane->setStyleSheet(styleSheet.readAll());
-    }
-    else {
-        QFile stylesheetReader(":/styles/general-dark.qss");
-        stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
-        QTextStream styleSheet(&stylesheetReader);
-        appletsPane->setStyleSheet(styleSheet.readAll());
-    }
+    // Theme
+    QFile stylesheetReader("/usr/share/plainDE/styles/" + appletsPaneConfig["theme"].toString());
+    stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
+    QTextStream styleSheet(&stylesheetReader);
+    appletsPane->setStyleSheet(styleSheet.readAll());
 
     QFont paneFont;
     paneFont.setFamily(appletsPaneConfig["fontFamily"].toString());

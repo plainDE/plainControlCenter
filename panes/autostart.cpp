@@ -124,19 +124,11 @@ QWidget* AutostartPane::createUI(QWidget* controlCenter) {
     layout->setContentsMargins(4, 4, 4, 4);
     autostartPane->setLayout(layout);
 
-    // Style
-    if (autostartPaneConfig["theme"] == "light") {
-        QFile stylesheetReader(":/styles/general-light.qss");
-        stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
-        QTextStream styleSheet(&stylesheetReader);
-        autostartPane->setStyleSheet(styleSheet.readAll());
-    }
-    else {
-        QFile stylesheetReader(":/styles/general-dark.qss");
-        stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
-        QTextStream styleSheet(&stylesheetReader);
-        autostartPane->setStyleSheet(styleSheet.readAll());
-    }
+    // Theme
+    QFile stylesheetReader("/usr/share/plainDE/styles/" + autostartPaneConfig["theme"].toString());
+    stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
+    QTextStream styleSheet(&stylesheetReader);
+    autostartPane->setStyleSheet(styleSheet.readAll());
 
     QFont paneFont;
     paneFont.setFamily(autostartPaneConfig["fontFamily"].toString());

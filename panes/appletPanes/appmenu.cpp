@@ -107,16 +107,8 @@ void AppMenuAppletPane::setCurrentSettings(QLineEdit* buttonTextLineEdit,
     makePreview(previewButton, buttonTextLineEdit, LineEditType::Text);
     makePreview(previewButton, buttonIconLineEdit, LineEditType::Icon);
 
-    if (appMenuAppletConfig["appMenuTriangularTabs"].toBool()) {
-        if (!useTriangularTabsCheckBox->isChecked()) {
-            useTriangularTabsCheckBox->toggle();
-        }
-    }
-    else {
-        if (useTriangularTabsCheckBox->isChecked()) {
-            useTriangularTabsCheckBox->toggle();
-        }
-    }
+    useTriangularTabsCheckBox->setChecked(
+                appMenuAppletConfig["appMenuTriangularTabs"].toBool());
 }
 
 void AppMenuAppletPane::addEntry(QListWidget* allAppsListWidget,
@@ -173,19 +165,11 @@ QWidget* AppMenuAppletPane::createUI() {
     layout->setContentsMargins(4, 4, 4, 4);
     appMenuAppletPane->setLayout(layout);
 
-    // Style
-    if (appMenuAppletConfig["theme"] == "light") {
-        QFile stylesheetReader(":/styles/general-light.qss");
-        stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
-        QTextStream styleSheet(&stylesheetReader);
-        appMenuAppletPane->setStyleSheet(styleSheet.readAll());
-    }
-    else {
-        QFile stylesheetReader(":/styles/general-dark.qss");
-        stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
-        QTextStream styleSheet(&stylesheetReader);
-        appMenuAppletPane->setStyleSheet(styleSheet.readAll());
-    }
+    // Theme
+    QFile stylesheetReader("/usr/share/plainDE/styles/" + appMenuAppletConfig["theme"].toString());
+    stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
+    QTextStream styleSheet(&stylesheetReader);
+    appMenuAppletPane->setStyleSheet(styleSheet.readAll());
 
     QFont paneFont;
     paneFont.setFamily(appMenuAppletConfig["fontFamily"].toString());

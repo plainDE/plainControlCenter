@@ -23,7 +23,8 @@
 #include <QMessageBox>
 #include <QColorDialog>
 #include <QLineEdit>
-#include <QDebug>
+#include <QScreen>
+#include <QGuiApplication>
 
 namespace Pane {
     void saveConfig(QJsonObject config);

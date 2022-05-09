@@ -10,10 +10,14 @@ public:
     void setCurrentSettings(QSpinBox* panelHeightSpinBox,
                             QRadioButton* panelTopLocationRadioButton,
                             QRadioButton* panelBottomLocationRadioButton,
-                            QCheckBox* panelAnimationCheckBox);
+                            QCheckBox* panelAnimationCheckBox,
+                            QCheckBox* expandPanelCheckBox,
+                            QSpinBox* panelOffsetSpinBox);
     void saveSettings(QSpinBox* panelHeightSpinBox,
                       QRadioButton* panelTopLocationRadioButton,
-                      QCheckBox* panelAnimationCheckBox);
+                      QCheckBox* panelAnimationCheckBox,
+                      QCheckBox* expandPanelCheckBox,
+                      QSpinBox* panelOffsetSpinBox);
 };
 
 #endif // PANEL_H

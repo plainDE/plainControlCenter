@@ -47,19 +47,11 @@ QWidget* DatetimeAppletPane::createUI() {
     layout->setContentsMargins(4, 4, 4, 4);
     datetimeAppletPane->setLayout(layout);
 
-    // Style
-    if (datetimeAppletPaneConfig["theme"] == "light") {
-        QFile stylesheetReader(":/styles/general-light.qss");
-        stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
-        QTextStream styleSheet(&stylesheetReader);
-        datetimeAppletPane->setStyleSheet(styleSheet.readAll());
-    }
-    else {
-        QFile stylesheetReader(":/styles/general-dark.qss");
-        stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
-        QTextStream styleSheet(&stylesheetReader);
-        datetimeAppletPane->setStyleSheet(styleSheet.readAll());
-    }
+    // Theme
+    QFile stylesheetReader("/usr/share/plainDE/styles/" + datetimeAppletPaneConfig["theme"].toString());
+    stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
+    QTextStream styleSheet(&stylesheetReader);
+    datetimeAppletPane->setStyleSheet(styleSheet.readAll());
 
     QFont paneFont;
     paneFont.setFamily(datetimeAppletPaneConfig["fontFamily"].toString());

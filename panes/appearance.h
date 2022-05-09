@@ -5,22 +5,21 @@
 #define APPEARANCEPANE_H
 
 
-class AppearancePane
-{
+class AppearancePane {
 public:
     void readConfig();
     QWidget* createUI(QWidget* controlCenter);
     void setCurrentSettings(QListWidget* iconThemesListWidget,
                             QFontComboBox* fontFamilyComboBox,
                             QSpinBox* fontSizeSpinBox,
-                            QRadioButton* lightRadioButton,
-                            QRadioButton* darkRadioButton,
+                            QListWidget* themesListWidget,
                             QLineEdit* accentLineEdit);
-    void prepareUI(QListWidget* iconThemesListWidget);
+    void prepareUI(QListWidget* iconThemesListWidget,
+                   QListWidget* themesListWidget);
     void saveSettings(QListWidget* iconThemesListWidget,
                       QFontComboBox* fontFamilyComboBox,
                       QSpinBox* fontSizeSpinBox,
-                      QRadioButton* lightRadioButton,
+                      QListWidget* themesListWidget,
                       QLineEdit* accentLineEdit);
 
 };
