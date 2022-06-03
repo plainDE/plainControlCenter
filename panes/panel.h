@@ -12,12 +12,14 @@ public:
                             QRadioButton* panelBottomLocationRadioButton,
                             QCheckBox* panelAnimationCheckBox,
                             QCheckBox* expandPanelCheckBox,
-                            QSpinBox* panelOffsetSpinBox);
+                            QSpinBox* panelOffsetSpinBox,
+                            QDoubleSpinBox* panelOpacitySpinBox);
     void saveSettings(QSpinBox* panelHeightSpinBox,
                       QRadioButton* panelTopLocationRadioButton,
                       QCheckBox* panelAnimationCheckBox,
                       QCheckBox* expandPanelCheckBox,
-                      QSpinBox* panelOffsetSpinBox);
+                      QSpinBox* panelOffsetSpinBox,
+                      QDoubleSpinBox* panelOpacitySpinBox);
 };
 
 #endif // PANEL_H

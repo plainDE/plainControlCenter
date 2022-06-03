@@ -89,7 +89,7 @@ void createUI() {
                             {"About", QIcon("/usr/share/plainDE/menuIcon.png")}
                         };
 
-    for (short i = 0; i < 4; ++i) {
+    for (short i = 0; i < 5; ++i) {
         entriesListWidget->addItem(entries[i].name);
         entriesListWidget->item(i)->setIcon(entries[i].icon);
     }
@@ -136,7 +136,7 @@ void createUI() {
             controlCenter->hide();
         }
         else if (entriesListWidget->selectedItems()[0]->text() == "About") {
-            process->start("plainAbout");
+            process->start("plainAbout --plainControlCenter");
         }
     });
 
