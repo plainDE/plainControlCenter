@@ -91,7 +91,7 @@ void createUI() {
                             {"About", QIcon("/usr/share/plainDE/menuIcon.png")}
                         };
 
-    for (short i = 0; i < 5; ++i) {
+    for (short i = 0; i < 6; ++i) {
         entriesListWidget->addItem(entries[i].name);
         entriesListWidget->item(i)->setIcon(entries[i].icon);
     }
