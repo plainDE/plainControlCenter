@@ -9,9 +9,11 @@ public:
     void readConfig();
     QWidget* createUI(QWidget* controlCenter);
     void prepareUI(QListWidget* layoutSwitchShortcut);
-    void setCurrentSettings(QListWidget* layoutList,
+    void setCurrentSettings(QCheckBox* useCountryFlagCheckBox,
+                            QListWidget* layoutList,
                             QListWidget* layoutSwitchShortcut);
-    void saveSettings(QListWidget* layoutList,
+    void saveSettings(QCheckBox* useCountryFlagCheckBox,
+                      QListWidget* layoutList,
                       QListWidget* layoutSwitchShortcut);
     void addLayout(QString layoutName, QListWidget* layoutList);
 };
