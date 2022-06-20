@@ -23,8 +23,11 @@ void KeyboardPane::addLayout(QString layoutName, QListWidget* layoutList) {
                                             layoutName));
 }
 
-void KeyboardPane::setCurrentSettings(QListWidget* layoutList,
+void KeyboardPane::setCurrentSettings(QCheckBox* useCountryFlagCheckBox,
+                                      QListWidget* layoutList,
                                       QListWidget* layoutSwitchShortcut) {
+    useCountryFlagCheckBox->setChecked(keyboardPaneConfig["useCountryFlag"].toBool());
+
     layoutList->clear();
 
     QString toggleMethod = keyboardPaneConfig["kbLayoutToggle"].toString();
@@ -43,7 +46,8 @@ void KeyboardPane::setCurrentSettings(QListWidget* layoutList,
     }
 }
 
-void KeyboardPane::saveSettings(QListWidget* layoutList,
+void KeyboardPane::saveSettings(QCheckBox* useCountryFlagCheckBox,
+                                QListWidget* layoutList,
                                 QListWidget* layoutSwitchShortcut) {
     QString activeLayouts = "";
     for (qint8 i = 0; i < layoutList->count(); ++i) {
@@ -56,6 +60,8 @@ void KeyboardPane::saveSettings(QListWidget* layoutList,
     QString toggleMethod = layoutSwitchMethods.key(
                 layoutSwitchShortcut->selectedItems()[0]->text());
     keyboardPaneConfig["kbLayoutToggle"] = QJsonValue(toggleMethod);
+
+    keyboardPaneConfig["useCountryFlag"] = QJsonValue(useCountryFlagCheckBox->isChecked());
 
     Pane::saveConfig(keyboardPaneConfig);
 }
@@ -114,6 +120,9 @@ QWidget* KeyboardPane::createUI(QWidget* controlCenter) {
     backPushButton->setIcon(QIcon::fromTheme("go-previous"));
     keyboardPane->layout()->addWidget(backPushButton);
 
+    QCheckBox* useCountryFlagCheckBox = new QCheckBox("Use country flag instead of layout code");
+    layout->addWidget(useCountryFlagCheckBox);
+
     QHBoxLayout* manageLanguagesLayout = new QHBoxLayout;
     QVBoxLayout* buttonsLayout = new QVBoxLayout;
 
@@ -145,7 +154,8 @@ QWidget* KeyboardPane::createUI(QWidget* controlCenter) {
     keyboardPane->layout()->addWidget(savePushButton);
 
     prepareUI(toggleMethodsListWidget);
-    setCurrentSettings(activeLayoutsListWidget, toggleMethodsListWidget);
+    setCurrentSettings(useCountryFlagCheckBox, activeLayoutsListWidget,
+                       toggleMethodsListWidget);
 
 
     LayoutDialog* layoutDg = new LayoutDialog;
@@ -154,13 +164,17 @@ QWidget* KeyboardPane::createUI(QWidget* controlCenter) {
 
     // Make connections
     keyboardPane->connect(savePushButton, &QPushButton::clicked, keyboardPane,
-                  [this, activeLayoutsListWidget, toggleMethodsListWidget]() {
-        saveSettings(activeLayoutsListWidget, toggleMethodsListWidget);
+                  [this, useCountryFlagCheckBox,
+                   activeLayoutsListWidget, toggleMethodsListWidget]() {
+        saveSettings(useCountryFlagCheckBox, activeLayoutsListWidget,
+                     toggleMethodsListWidget);
     });
 
     keyboardPane->connect(revertPushButton, &QPushButton::clicked, keyboardPane,
-                  [this, activeLayoutsListWidget, toggleMethodsListWidget]() {
-        setCurrentSettings(activeLayoutsListWidget, toggleMethodsListWidget);
+                  [this, useCountryFlagCheckBox, activeLayoutsListWidget,
+                          toggleMethodsListWidget]() {
+        setCurrentSettings(useCountryFlagCheckBox, activeLayoutsListWidget,
+                           toggleMethodsListWidget);
     });
 
     keyboardPane->connect(backPushButton, &QPushButton::clicked, keyboardPane,
