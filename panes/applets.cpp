@@ -5,7 +5,6 @@
 
 QJsonObject appletsPaneConfig;
 QHash<QListWidgetItem*,QString> nameByItem;
-QHash<QString,QString> iconByApplet;
 
 
 void AppletsPane::readConfig() {
@@ -26,28 +25,29 @@ void AppletsPane::prepareUI(QListWidget* allAppletsListWidget,
     enabledAppletsListWidget->clear();
     nameByItem.clear();
 
-    iconByApplet["appmenu"] = "app-launcher";
-    iconByApplet["windowlist"] = "kwin";
-    iconByApplet["spacer"] = "extensions";
-    iconByApplet["workspaces"] = "cs-workspaces";
-    iconByApplet["volume"] = "sound";
-    iconByApplet["kblayout"] = "keyboard";
-    iconByApplet["datetime"] = "calendar";
-    iconByApplet["splitter"] = "extensions";
-    iconByApplet["usermenu"] = "user_icon";
+    QHash<QString,QString> allApplets;  // icon by applet
+    allApplets["appmenu"] = "app-launcher";
+    allApplets["windowlist"] = "kwin";
+    allApplets["spacer"] = "extensions";
+    allApplets["workspaces"] = "cs-workspaces";
+    allApplets["volume"] = "sound";
+    allApplets["kblayout"] = "keyboard";
+    allApplets["datetime"] = "calendar";
+    allApplets["splitter"] = "extensions";
+    allApplets["usermenu"] = "user_icon";
 
     QStringList enabledApplets = appletsPaneConfig["applets"].toVariant().toStringList();
 
-    foreach (QString currentApplet, iconByApplet.keys()) {
+    foreach (QString currentApplet, allApplets.keys()) {
         QListWidgetItem* item = new QListWidgetItem(currentApplet);
-        item->setIcon(QIcon::fromTheme(iconByApplet[currentApplet]));
+        item->setIcon(QIcon::fromTheme(allApplets[currentApplet]));
         allAppletsListWidget->addItem(item);
         nameByItem[item] = currentApplet;
     }
 
     foreach (QString currentApplet, enabledApplets) {
         QListWidgetItem* item = new QListWidgetItem(currentApplet);
-        item->setIcon(QIcon::fromTheme(iconByApplet[currentApplet]));
+        item->setIcon(QIcon::fromTheme(allApplets[currentApplet]));
         enabledAppletsListWidget->addItem(item);
         nameByItem[item] = currentApplet;
     }
@@ -57,9 +57,8 @@ void AppletsPane::addEntry(QListWidget* allAppletsListWidget,
                            QListWidget* enabledAppletsListWidget) {
     if (!allAppletsListWidget->selectedItems().isEmpty()) {
         QListWidgetItem* selectedItem = allAppletsListWidget->selectedItems()[0];
-        QListWidgetItem* newItem = new QListWidgetItem(selectedItem->text());
-        newItem->setIcon(QIcon::fromTheme(iconByApplet[selectedItem->text()]));
 
+        QListWidgetItem* newItem = new QListWidgetItem(selectedItem->text());
         enabledAppletsListWidget->addItem(newItem);
         nameByItem[newItem] = nameByItem[selectedItem];
     }
@@ -110,17 +109,11 @@ QWidget* AppletsPane::createUI(QWidget* controlCenter) {
     backPushButton->setIcon(QIcon::fromTheme("go-previous"));
     appletsPane->layout()->addWidget(backPushButton);
 
-    QLabel* allAppletsLabel = new QLabel("All applets");
-    appletsPane->layout()->addWidget(allAppletsLabel);
-
     QListWidget* allAppletsListWidget = new QListWidget;
     appletsPane->layout()->addWidget(allAppletsListWidget);
     allAppletsListWidget->setStyleSheet("QListView::item:selected { background-color: " + \
                                         appletsPaneConfig["accent"].toString() + \
                                         "; color: #ffffff };");
-
-    QLabel* enabledAppletsLabel = new QLabel("Enabled applets");
-    appletsPane->layout()->addWidget(enabledAppletsLabel);
 
     QListWidget* enabledAppletsListWidget = new QListWidget;
     appletsPane->layout()->addWidget(enabledAppletsListWidget);
@@ -175,23 +168,21 @@ QWidget* AppletsPane::createUI(QWidget* controlCenter) {
                          [enabledAppletsListWidget,
                           appMenuAppletWidget, appMenuAppletPane,
                           datetimeAppletWidget, datetimeAppletPane]()mutable {
-        if (!enabledAppletsListWidget->selectedItems().isEmpty()) {
-            if (enabledAppletsListWidget->selectedItems()[0]->text() == "appmenu") {
-                appMenuAppletWidget = appMenuAppletPane->createUI();
-                appMenuAppletWidget->show();
-            }
-            else if (enabledAppletsListWidget->selectedItems()[0]->text() == "datetime") {
-                datetimeAppletWidget = datetimeAppletPane->createUI();
-                datetimeAppletWidget->show();
-            }
-            else {
-                QMessageBox msg;
-                msg.setWindowTitle("No such pane");
-                msg.setText("Nothing to configure in this applet.");
-                msg.setStandardButtons(QMessageBox::Ok);
-                msg.setIcon(QMessageBox::Information);
-                msg.exec();
-            }
+        if (enabledAppletsListWidget->selectedItems()[0]->text() == "appmenu") {
+            appMenuAppletWidget = appMenuAppletPane->createUI();
+            appMenuAppletWidget->show();
+        }
+        else if (enabledAppletsListWidget->selectedItems()[0]->text() == "datetime") {
+            datetimeAppletWidget = datetimeAppletPane->createUI();
+            datetimeAppletWidget->show();
+        }
+        else {
+            QMessageBox msg;
+            msg.setWindowTitle("No such pane");
+            msg.setText("Nothing to configure in this applet.");
+            msg.setStandardButtons(QMessageBox::Ok);
+            msg.setIcon(QMessageBox::Information);
+            msg.exec();
         }
     });
 

@@ -16,8 +16,6 @@ SOURCES += \
     panes/appletPanes/datetime.cpp \
     panes/applets.cpp \
     panes/autostart.cpp \
-    panes/keyboard/keyboard.cpp \
-    panes/keyboard/layoutdialog.cpp \
     panes/panel.cpp \
     settings.cpp
 
@@ -28,8 +26,6 @@ HEADERS += \
     panes/appletPanes/datetime.h \
     panes/applets.h \
     panes/autostart.h \
-    panes/keyboard/keyboard.h \
-    panes/keyboard/layoutdialog.h \
     panes/panel.h \
     settings.h
 

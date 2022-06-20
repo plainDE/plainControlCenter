@@ -153,13 +153,17 @@ QWidget* AppearancePane::createUI(QWidget* controlCenter) {
     appearancePane->layout()->addWidget(fontFamilyComboBox);
     appearancePane->layout()->addWidget(fontSizeSpinBox);
 
+    /*
+    QRadioButton* lightRadioButton = new QRadioButton("Light");
+    QRadioButton* darkRadioButton = new QRadioButton("Dark");
+    appearancePane->layout()->addWidget(themeLabel);
+    appearancePane->layout()->addWidget(lightRadioButton);
+    appearancePane->layout()->addWidget(darkRadioButton);*/
+
     QLabel* themeLabel = new QLabel("Theme");
     appearancePane->layout()->addWidget(themeLabel);
     QListWidget* themesListWidget = new QListWidget;
     appearancePane->layout()->addWidget(themesListWidget);
-    themesListWidget->setStyleSheet("QListView::item:selected { background-color: " + \
-                                    appearancePaneConfig["accent"].toString() + \
-                                    "; color: #ffffff };");
 
     QColorDialog* colorDialog = new QColorDialog;
     QLabel* accentLabel = new QLabel("Accent");
