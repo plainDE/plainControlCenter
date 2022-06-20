@@ -17,6 +17,7 @@
 #include "panes/autostart.h"
 #include "panes/panel.h"
 #include "panes/applets.h"
+#include "panes/keyboard/keyboard.h"
 
 QJsonObject config;
 QFont controlCenterFont;
@@ -44,6 +45,7 @@ void readConfig() {
 void createUI() {
     QWidget* controlCenter = new QWidget;
     controlCenter->setObjectName("controlCenter");
+    controlCenter->setWindowTitle("plainControlCenter");
 
     // Geometry
     short width = 400, height = 500;
@@ -78,7 +80,7 @@ void createUI() {
                             {"Appearance", QIcon::fromTheme("preferences-desktop-theme")},
                             //{"Sound", QIcon::fromTheme("audio-volume-high")},
                             //{"Display", QIcon::fromTheme("video-display")},
-                            //{"Keyboard", QIcon::fromTheme("preferences-desktop-keyboard")},
+                            {"Keyboard", QIcon::fromTheme("preferences-desktop-keyboard")},
                             //{"Date & Time", QIcon::fromTheme("x-office-calendar")},
                             //{"Language", QIcon::fromTheme("preferences-desktop-locale")},
                             {"Autostart", QIcon::fromTheme("applications-utilities")},
@@ -99,11 +101,14 @@ void createUI() {
     AutostartPane* autostartPane = new AutostartPane;
     PanelPane* panelPane = new PanelPane;
     AppletsPane* appletsPane = new AppletsPane;
+    KeyboardPane* keyboardPane = new KeyboardPane;
+
 
     QWidget* appearanceWidget = appearancePane->createUI(controlCenter);
     QWidget* autostartWidget = autostartPane->createUI(controlCenter);
     QWidget* panelWidget = panelPane->createUI(controlCenter);
     QWidget* appletsWidget = appletsPane->createUI(controlCenter);
+    QWidget* keyboardWidget = keyboardPane->createUI(controlCenter);
 
 
     QProcess* process = new QProcess(controlCenter);
@@ -114,7 +119,8 @@ void createUI() {
                 appearanceWidget, appearancePane,
                 autostartWidget, autostartPane,
                 panelWidget, panelPane,
-                appletsWidget, appletsPane]()mutable {
+                appletsWidget, appletsPane,
+                keyboardWidget, keyboardPane]()mutable {
         if (entriesListWidget->selectedItems()[0]->text() == "Appearance") {
             appearanceWidget = appearancePane->createUI(controlCenter);
             appearanceWidget->show();
@@ -133,6 +139,11 @@ void createUI() {
         else if (entriesListWidget->selectedItems()[0]->text() == "Applets") {
             appletsWidget = appletsPane->createUI(controlCenter);
             appletsWidget->show();
+            controlCenter->hide();
+        }
+        else if (entriesListWidget->selectedItems()[0]->text() == "Keyboard") {
+            keyboardWidget = keyboardPane->createUI(controlCenter);
+            keyboardWidget->show();
             controlCenter->hide();
         }
         else if (entriesListWidget->selectedItems()[0]->text() == "About") {
