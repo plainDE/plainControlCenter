@@ -2,6 +2,7 @@
 
 #include "appletPanes/appmenu.h"
 #include "appletPanes/datetime.h"
+#include "appletPanes/localipv4.h"
 
 QJsonObject appletsPaneConfig;
 QHash<QListWidgetItem*,QString> nameByItem;
@@ -35,6 +36,7 @@ void AppletsPane::prepareUI(QListWidget* allAppletsListWidget,
     iconByApplet["datetime"] = "calendar";
     iconByApplet["splitter"] = "extensions";
     iconByApplet["usermenu"] = "user_icon";
+    iconByApplet["localipv4"] = "extensions";
 
     QStringList enabledApplets = appletsPaneConfig["applets"].toVariant().toStringList();
 
@@ -148,9 +150,11 @@ QWidget* AppletsPane::createUI(QWidget* controlCenter) {
     // Applets panes
     AppMenuAppletPane* appMenuAppletPane = new AppMenuAppletPane;
     DatetimeAppletPane* datetimeAppletPane = new DatetimeAppletPane;
+    LocalIPv4AppletPane* localIPv4AppletPane = new LocalIPv4AppletPane;
 
     QWidget* appMenuAppletWidget = appMenuAppletPane->createUI();
     QWidget* datetimeAppletWidget = datetimeAppletPane->createUI();
+    QWidget* localIPv4AppletWidget = localIPv4AppletPane->createUI();
 
 
     // Make connections
@@ -174,7 +178,8 @@ QWidget* AppletsPane::createUI(QWidget* controlCenter) {
     appletsPane->connect(customizePushButton, &QPushButton::clicked, appletsPane,
                          [enabledAppletsListWidget,
                           appMenuAppletWidget, appMenuAppletPane,
-                          datetimeAppletWidget, datetimeAppletPane]()mutable {
+                          datetimeAppletWidget, datetimeAppletPane,
+                          localIPv4AppletWidget, localIPv4AppletPane]()mutable {
         if (!enabledAppletsListWidget->selectedItems().isEmpty()) {
             if (enabledAppletsListWidget->selectedItems()[0]->text() == "appmenu") {
                 appMenuAppletWidget = appMenuAppletPane->createUI();
@@ -183,6 +188,10 @@ QWidget* AppletsPane::createUI(QWidget* controlCenter) {
             else if (enabledAppletsListWidget->selectedItems()[0]->text() == "datetime") {
                 datetimeAppletWidget = datetimeAppletPane->createUI();
                 datetimeAppletWidget->show();
+            }
+            else if (enabledAppletsListWidget->selectedItems()[0]->text() == "localipv4") {
+                localIPv4AppletWidget = localIPv4AppletPane->createUI();
+                localIPv4AppletWidget->show();
             }
             else {
                 QMessageBox msg;

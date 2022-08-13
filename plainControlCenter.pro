@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core network gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -14,6 +14,7 @@ SOURCES += \
     panes/appearance.cpp \
     panes/appletPanes/appmenu.cpp \
     panes/appletPanes/datetime.cpp \
+    panes/appletPanes/localipv4.cpp \
     panes/applets.cpp \
     panes/autostart.cpp \
     panes/keyboard/keyboard.cpp \
@@ -26,6 +27,7 @@ HEADERS += \
     panes/appearance.h \
     panes/appletPanes/appmenu.h \
     panes/appletPanes/datetime.h \
+    panes/appletPanes/localipv4.h \
     panes/applets.h \
     panes/autostart.h \
     panes/keyboard/keyboard.h \
