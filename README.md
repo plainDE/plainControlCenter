@@ -1,4 +1,4 @@
 # plainControlCenter
 
 App that lets you edit config.json more convenient and faster<br><br>
-<img src="pccscr.png" width="350">
+<img src="pcc-scr-0.2.1.png" width="350">
