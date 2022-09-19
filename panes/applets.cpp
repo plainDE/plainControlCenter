@@ -37,6 +37,7 @@ void AppletsPane::prepareUI(QListWidget* allAppletsListWidget,
     iconByApplet["splitter"] = "extensions";
     iconByApplet["usermenu"] = "user_icon";
     iconByApplet["localipv4"] = "extensions";
+    iconByApplet["mpris"] = "sound";
 
     QStringList enabledApplets = appletsPaneConfig["applets"].toVariant().toStringList();
 
