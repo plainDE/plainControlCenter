@@ -41,5 +41,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 RESOURCES +=
 
 FORMS += \
-    panes/monitors.ui \
     panes/panels.ui
