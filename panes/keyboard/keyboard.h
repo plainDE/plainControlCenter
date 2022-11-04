@@ -2,12 +2,13 @@
 #define KEYBOARD_H
 
 #include "../../pane.h"
+#include "../../settings.h"
 
 class KeyboardPane {
 
 public:
     void readConfig();
-    QWidget* createUI(QWidget* controlCenter);
+    QWidget* createUI(Settings* controlCenter);
     void prepareUI(QListWidget* layoutSwitchShortcut);
     void setCurrentSettings(QCheckBox* useCountryFlagCheckBox,
                             QListWidget* layoutList,

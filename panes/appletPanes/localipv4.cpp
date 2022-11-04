@@ -57,6 +57,7 @@ QWidget* LocalIPv4AppletPane::createUI() {
     stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream styleSheet(&stylesheetReader);
     localIPv4AppletPane->setStyleSheet(styleSheet.readAll());
+    stylesheetReader.close();
 
     QFont paneFont;
     paneFont.setFamily(localIPv4AppletPaneConfig["fontFamily"].toString());

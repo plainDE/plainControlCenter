@@ -15,8 +15,7 @@
 
 #include "panes/appearance.h"
 #include "panes/autostart.h"
-#include "panes/panel.h"
-#include "panes/applets.h"
+#include "panes/panels.h"
 #include "panes/keyboard/keyboard.h"
 
 QJsonObject config;
@@ -27,8 +26,7 @@ struct Entry {
     QIcon icon;
 };
 
-
-void readConfig() {
+void Settings::readConfig() {
     // set globally readable variable for reading settings
 
     QString homeDirectory = getenv("HOME");
@@ -42,31 +40,38 @@ void readConfig() {
     config = QJsonDocument::fromJson(data.toUtf8()).object();
 }
 
-void createUI() {
-    QWidget* controlCenter = new QWidget;
-    controlCenter->setObjectName("controlCenter");
-    controlCenter->setWindowTitle("plainControlCenter");
+void Settings::updateStyle() {
+    readConfig();
 
-    // Geometry
-    short width = 400, height = 500;
-    controlCenter->setGeometry(250, 250, width, height);
-
-    // Style
+    // Theme
     QFile stylesheetReader("/usr/share/plainDE/styles/" + config["theme"].toString());
     stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream styleSheet(&stylesheetReader);
-    controlCenter->setStyleSheet(styleSheet.readAll());
+    controlCenterWidget->setStyleSheet(styleSheet.readAll());
+    stylesheetReader.close();
 
-    // Set font
+    // Font
     controlCenterFont.setFamily(config["fontFamily"].toString());
     controlCenterFont.setPointSize(config["fontSize"].toInt());
-    controlCenter->setFont(controlCenterFont);
+    controlCenterWidget->setFont(controlCenterFont);
+}
 
+void Settings::createUI() {
+    controlCenterWidget = new QWidget;
+    controlCenterWidget->setObjectName("controlCenter");
+    controlCenterWidget->setWindowTitle("plainControlCenter");
+
+    // Geometry
+    short width = 400, height = 500;
+    controlCenterWidget->setGeometry(250, 250, width, height);
+
+    // Appearance
+    updateStyle();
 
     // UI
     QVBoxLayout* layout = new QVBoxLayout;
     layout->setContentsMargins(4, 4, 4, 4);
-    controlCenter->setLayout(layout);
+    controlCenterWidget->setLayout(layout);
 
     QListWidget* entriesListWidget = new QListWidget;
     entriesListWidget->setStyleSheet("QListView::item:selected { background-color: " + \
@@ -84,8 +89,7 @@ void createUI() {
                             //{"Date & Time", QIcon::fromTheme("x-office-calendar")},
                             //{"Language", QIcon::fromTheme("preferences-desktop-locale")},
                             {"Autostart", QIcon::fromTheme("applications-utilities")},
-                            {"Panel", QIcon::fromTheme("panel")},
-                            {"Applets", QIcon::fromTheme("panel-applets")},  // cs-extensions
+                            {"Panels", QIcon::fromTheme("panel")},
                             //{"Developer settings", QIcon::fromTheme("utilities-terminal")},
                             //{"Default applications", QIcon::fromTheme("emblem-default")},
                             {"About", QIcon("/usr/share/plainDE/menuIcon.png")}
@@ -96,73 +100,51 @@ void createUI() {
         entriesListWidget->item(i)->setIcon(entries[i].icon);
     }
 
-    // Widgets
-    AppearancePane* appearancePane = new AppearancePane;
-    AutostartPane* autostartPane = new AutostartPane;
-    PanelPane* panelPane = new PanelPane;
-    AppletsPane* appletsPane = new AppletsPane;
-    KeyboardPane* keyboardPane = new KeyboardPane;
-
-
-    QWidget* appearanceWidget = appearancePane->createUI(controlCenter);
-    QWidget* autostartWidget = autostartPane->createUI(controlCenter);
-    QWidget* panelWidget = panelPane->createUI(controlCenter);
-    QWidget* appletsWidget = appletsPane->createUI(controlCenter);
-    QWidget* keyboardWidget = keyboardPane->createUI(controlCenter);
-
-
-    QProcess* process = new QProcess(controlCenter);
+    QProcess* process = new QProcess(controlCenterWidget);
 
     // Make connections
-    controlCenter->connect(entriesListWidget, &QListWidget::itemDoubleClicked, controlCenter,
-               [entriesListWidget, process, controlCenter,
-                appearanceWidget, appearancePane,
-                autostartWidget, autostartPane,
-                panelWidget, panelPane,
-                appletsWidget, appletsPane,
-                keyboardWidget, keyboardPane]()mutable {
+    controlCenterWidget->connect(entriesListWidget, &QListWidget::itemDoubleClicked, controlCenterWidget,
+               [this, entriesListWidget, process]() {
         if (entriesListWidget->selectedItems()[0]->text() == "Appearance") {
-            appearanceWidget = appearancePane->createUI(controlCenter);
+            AppearancePane* appearancePane = new AppearancePane;
+            QWidget* appearanceWidget = appearancePane->createUI(this);
             appearanceWidget->show();
-            controlCenter->hide();
+            controlCenterWidget->hide();
         }
         else if (entriesListWidget->selectedItems()[0]->text() == "Autostart") {
-            autostartWidget = autostartPane->createUI(controlCenter);
+            AutostartPane* autostartPane = new AutostartPane;
+            QWidget* autostartWidget = autostartPane->createUI(this);
             autostartWidget->show();
-            controlCenter->hide();
+            controlCenterWidget->hide();
         }
-        else if (entriesListWidget->selectedItems()[0]->text() == "Panel") {
-            panelWidget = panelPane->createUI(controlCenter);
-            panelWidget->show();
-            controlCenter->hide();
-        }
-        else if (entriesListWidget->selectedItems()[0]->text() == "Applets") {
-            appletsWidget = appletsPane->createUI(controlCenter);
-            appletsWidget->show();
-            controlCenter->hide();
+        else if (entriesListWidget->selectedItems()[0]->text() == "Panels") {
+            PanelsPane* panelsPane = new PanelsPane(nullptr, this);
+            panelsPane->show();
+            controlCenterWidget->hide();
         }
         else if (entriesListWidget->selectedItems()[0]->text() == "Keyboard") {
-            keyboardWidget = keyboardPane->createUI(controlCenter);
+            KeyboardPane* keyboardPane = new KeyboardPane;
+            QWidget* keyboardWidget = keyboardPane->createUI(this);
             keyboardWidget->show();
-            controlCenter->hide();
+            controlCenterWidget->hide();
         }
         else if (entriesListWidget->selectedItems()[0]->text() == "About") {
             process->start("plainAbout --plainControlCenter");
         }
     });
 
-    controlCenter->layout()->addWidget(entriesListWidget);
-    controlCenter->show();
+    controlCenterWidget->layout()->addWidget(entriesListWidget);
+    controlCenterWidget->show();
 }
 
 
-settings::settings(QWidget *parent): QWidget(parent) {
+Settings::Settings() {
     readConfig();
     QIcon::setThemeName(config["iconTheme"].toString());
     createUI();
 }
 
-settings::~settings() {
+Settings::~Settings() {
 
 }
 

@@ -15,11 +15,10 @@ SOURCES += \
     panes/appletPanes/appmenu.cpp \
     panes/appletPanes/datetime.cpp \
     panes/appletPanes/localipv4.cpp \
-    panes/applets.cpp \
     panes/autostart.cpp \
     panes/keyboard/keyboard.cpp \
     panes/keyboard/layoutdialog.cpp \
-    panes/panel.cpp \
+    panes/panels.cpp \
     settings.cpp
 
 HEADERS += \
@@ -28,11 +27,10 @@ HEADERS += \
     panes/appletPanes/appmenu.h \
     panes/appletPanes/datetime.h \
     panes/appletPanes/localipv4.h \
-    panes/applets.h \
     panes/autostart.h \
     panes/keyboard/keyboard.h \
     panes/keyboard/layoutdialog.h \
-    panes/panel.h \
+    panes/panels.h \
     settings.h
 
 # Default rules for deployment.
@@ -41,3 +39,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES +=
+
+FORMS += \
+    panes/monitors.ui \
+    panes/panels.ui

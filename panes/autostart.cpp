@@ -1,5 +1,6 @@
 #include "autostart.h"
 #include "../pane.h"
+#include "../settings.h"
 
 QJsonObject autostartPaneConfig;
 QStringList autostartEntries;
@@ -114,7 +115,7 @@ void AutostartPane::saveSettings(QListWidget* autostartEntriesListWidget) {
     Pane::saveConfig(autostartPaneConfig);
 }
 
-QWidget* AutostartPane::createUI(QWidget* controlCenter) {
+QWidget* AutostartPane::createUI(Settings* controlCenter) {
     readConfig();
 
     // UI
@@ -129,6 +130,7 @@ QWidget* AutostartPane::createUI(QWidget* controlCenter) {
     stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream styleSheet(&stylesheetReader);
     autostartPane->setStyleSheet(styleSheet.readAll());
+    stylesheetReader.close();
 
     QFont paneFont;
     paneFont.setFamily(autostartPaneConfig["fontFamily"].toString());
@@ -177,7 +179,7 @@ QWidget* AutostartPane::createUI(QWidget* controlCenter) {
     // Make connections
     autostartPane->connect(backPushButton, &QPushButton::clicked, autostartPane,
                            [autostartPane, controlCenter]() {
-        controlCenter->show();
+        controlCenter->controlCenterWidget->show();
         autostartPane->hide();
         delete autostartPane;
     });

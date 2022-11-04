@@ -1,14 +1,14 @@
-#include "../pane.h"
-#include "../settings.h"
-
 #ifndef APPEARANCEPANE_H
 #define APPEARANCEPANE_H
 
+#include "../pane.h"
+#include "../settings.h"
 
 class AppearancePane {
 public:
+    void updateStyle(QWidget* pane);
     void readConfig();
-    QWidget* createUI(QWidget* controlCenter);
+    QWidget* createUI(Settings* controlCenter);
     void setCurrentSettings(QListWidget* iconThemesListWidget,
                             QFontComboBox* fontFamilyComboBox,
                             QSpinBox* fontSizeSpinBox,

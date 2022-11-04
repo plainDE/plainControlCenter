@@ -21,7 +21,7 @@ void AppMenuAppletPane::makePreview(QPushButton* previewButton,
                                     QLineEdit* lineEdit,
                                     LineEditType lineEditType) {
     if (lineEditType == Text) {
-        previewButton->setText(lineEdit->text());
+        previewButton->setText(" " + lineEdit->text());
     }
     else {
         if (QIcon::hasThemeIcon(lineEdit->text())) {
@@ -170,6 +170,7 @@ QWidget* AppMenuAppletPane::createUI() {
     stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream styleSheet(&stylesheetReader);
     appMenuAppletPane->setStyleSheet(styleSheet.readAll());
+    stylesheetReader.close();
 
     QFont paneFont;
     paneFont.setFamily(appMenuAppletConfig["fontFamily"].toString());

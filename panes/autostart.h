@@ -2,6 +2,7 @@
 #define AUTOSTARTPANE_H
 
 #include "../pane.h"
+#include "../settings.h"
 
 struct App {
     QString displayedName;
@@ -9,11 +10,10 @@ struct App {
     bool display;
 };
 
-class AutostartPane
-{
+class AutostartPane {
 public:
     void readConfig();
-    QWidget* createUI(QWidget* controlCenter);
+    QWidget* createUI(Settings* controlCenter);
     void prepareUI(QListWidget* autostartEntriesListWidget,
                    QListWidget* allAppsListWidget);
     void addEntry(QListWidget* autostartEntriesListWidget,

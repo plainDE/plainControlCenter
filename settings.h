@@ -4,13 +4,16 @@
 #include <QWidget>
 #include <QJsonObject>
 
-class settings : public QWidget
-{
-    Q_OBJECT
+class Settings {
+public:
+    Settings();
+    void updateStyle();
+    void readConfig();
+    void createUI();
+    ~Settings();
 
 public:
-    settings(QWidget *parent = nullptr);
-    ~settings();
+    QWidget* controlCenterWidget;
 
 };
 #endif // SETTINGS_H

@@ -52,6 +52,7 @@ QWidget* DatetimeAppletPane::createUI() {
     stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream styleSheet(&stylesheetReader);
     datetimeAppletPane->setStyleSheet(styleSheet.readAll());
+    stylesheetReader.close();
 
     QFont paneFont;
     paneFont.setFamily(datetimeAppletPaneConfig["fontFamily"].toString());

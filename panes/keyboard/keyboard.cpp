@@ -1,5 +1,7 @@
 #include "keyboard.h"
 #include "layoutdialog.h"
+#include "../../pane.h"
+#include "../../settings.h"
 
 QJsonObject keyboardPaneConfig;
 QVariantMap layoutCodes;
@@ -92,7 +94,7 @@ void KeyboardPane::prepareUI(QListWidget* layoutSwitchShortcut) {
     }
 }
 
-QWidget* KeyboardPane::createUI(QWidget* controlCenter) {
+QWidget* KeyboardPane::createUI(Settings* controlCenter) {
     readConfig();
 
     // UI
@@ -107,6 +109,7 @@ QWidget* KeyboardPane::createUI(QWidget* controlCenter) {
     stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream styleSheet(&stylesheetReader);
     keyboardPane->setStyleSheet(styleSheet.readAll());
+    stylesheetReader.close();
 
     QFont paneFont;
     paneFont.setFamily(keyboardPaneConfig["fontFamily"].toString());
@@ -179,7 +182,7 @@ QWidget* KeyboardPane::createUI(QWidget* controlCenter) {
 
     keyboardPane->connect(backPushButton, &QPushButton::clicked, keyboardPane,
                   [keyboardPane, layoutDg, controlCenter]() {
-        controlCenter->show();
+        controlCenter->controlCenterWidget->show();
         keyboardPane->hide();
         delete layoutDg;
         delete keyboardPane;

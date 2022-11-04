@@ -5,6 +5,6 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    settings w;
+    Settings w;
     return a.exec();
 }

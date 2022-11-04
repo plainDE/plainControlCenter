@@ -47,6 +47,7 @@ QWidget* LayoutDialog::createUI(KeyboardPane* kbPane,
     stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream styleSheet(&stylesheetReader);
     layoutDialog->setStyleSheet(styleSheet.readAll());
+    stylesheetReader.close();
 
     QFont paneFont;
     paneFont.setFamily(layoutDialogConfig["fontFamily"].toString());

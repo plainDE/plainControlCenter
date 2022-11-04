@@ -5,6 +5,19 @@
 QJsonObject appearancePaneConfig;
 
 
+void AppearancePane::updateStyle(QWidget* pane) {
+    QFile stylesheetReader("/usr/share/plainDE/styles/" + appearancePaneConfig["theme"].toString());
+    stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
+    QTextStream styleSheet(&stylesheetReader);
+    pane->setStyleSheet(styleSheet.readAll());
+    stylesheetReader.close();
+
+    QFont paneFont;
+    paneFont.setFamily(appearancePaneConfig["fontFamily"].toString());
+    paneFont.setPointSize(appearancePaneConfig["fontSize"].toInt());
+    pane->setFont(paneFont);
+}
+
 void AppearancePane::readConfig() {
     QString homeDirectory = getenv("HOME");
     QFile file;
@@ -109,7 +122,7 @@ void AppearancePane::saveSettings(QListWidget* iconThemeListWidget,
     Pane::saveConfig(appearancePaneConfig);
 }
 
-QWidget* AppearancePane::createUI(QWidget* controlCenter) {
+QWidget* AppearancePane::createUI(Settings* controlCenter) {
     readConfig();
 
     // UI
@@ -119,16 +132,8 @@ QWidget* AppearancePane::createUI(QWidget* controlCenter) {
     layout->setContentsMargins(4, 4, 4, 4);
     appearancePane->setLayout(layout);
 
-    // Theme
-    QFile stylesheetReader("/usr/share/plainDE/styles/" + appearancePaneConfig["theme"].toString());
-    stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
-    QTextStream styleSheet(&stylesheetReader);
-    appearancePane->setStyleSheet(styleSheet.readAll());
-
-    QFont paneFont;
-    paneFont.setFamily(appearancePaneConfig["fontFamily"].toString());
-    paneFont.setPointSize(appearancePaneConfig["fontSize"].toInt());
-    appearancePane->setFont(paneFont);
+    // Appearance
+    updateStyle(appearancePane);
 
     short width = 400, height = 500;
     appearancePane->setGeometry(250, 250, width, height);
@@ -185,12 +190,14 @@ QWidget* AppearancePane::createUI(QWidget* controlCenter) {
     // Make connections
     appearancePane->connect(savePushButton, &QPushButton::clicked, appearancePane,
                   [this, iconThemeListWidget, fontFamilyComboBox, fontSizeSpinBox,
-                   themesListWidget, accentLineEdit]() {
+                   themesListWidget, accentLineEdit, appearancePane]() {
         saveSettings(iconThemeListWidget,
                      fontFamilyComboBox,
                      fontSizeSpinBox,
                      themesListWidget,
                      accentLineEdit);
+
+        updateStyle(appearancePane);
     });
 
     appearancePane->connect(revertPushButton, &QPushButton::clicked, appearancePane,
@@ -205,7 +212,8 @@ QWidget* AppearancePane::createUI(QWidget* controlCenter) {
 
     appearancePane->connect(backPushButton, &QPushButton::clicked, appearancePane,
                   [appearancePane, controlCenter]() {
-        controlCenter->show();
+        controlCenter->updateStyle();
+        controlCenter->controlCenterWidget->show();
         appearancePane->hide();
         delete appearancePane;
     });
