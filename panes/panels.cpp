@@ -65,6 +65,9 @@ void PanelsPane::setCurrentSettings(qint8 panelNumber) {
         ui->enabledAppletsListWidget->addItem(item);
     }
 
+    // Launcher icon size
+    ui->launcherIconSizeSpinBox->setValue(panelsPaneConfig[panelName].toObject()["launcherIconSize"].toInt());
+
     // Expand panel
     ui->expandCheckBox->setChecked(false);
     if (panelsPaneConfig[panelName].toObject()["expand"].toBool()) {
@@ -100,6 +103,9 @@ void PanelsPane::saveSettings(qint8 panelNumber) {
 
     QJsonObject panelObject = panelsPaneConfig[panelName].toObject();
     panelObject["applets"] = QJsonValue(enabledApplets);
+
+    // Launcher icon size
+    panelObject["launcherIconSize"] = ui->launcherIconSizeSpinBox->value();
 
     // Expand panel
     panelObject["expand"] = QJsonValue(ui->expandCheckBox->isChecked());
