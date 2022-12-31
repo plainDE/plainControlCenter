@@ -130,6 +130,9 @@ QWidget* KeyboardPane::createUI(Settings* controlCenter) {
     QVBoxLayout* buttonsLayout = new QVBoxLayout;
 
     QListWidget* activeLayoutsListWidget = new QListWidget;
+    activeLayoutsListWidget->setStyleSheet("QListView::item:selected { background-color: " + \
+                                           keyboardPaneConfig["accent"].toString() + \
+                                           "; color: #ffffff };");
     manageLanguagesLayout->addWidget(activeLayoutsListWidget);
 
     QPushButton* moveUpPushButton = new QPushButton("↑");  // up arrow
@@ -146,6 +149,9 @@ QWidget* KeyboardPane::createUI(Settings* controlCenter) {
     layout->addLayout(manageLanguagesLayout);
 
     QListWidget* toggleMethodsListWidget = new QListWidget;
+    toggleMethodsListWidget->setStyleSheet("QListView::item:selected { background-color: " + \
+                                           keyboardPaneConfig["accent"].toString() + \
+                                           "; color: #ffffff };");
     keyboardPane->layout()->addWidget(toggleMethodsListWidget);
 
     keyboardPane->layout()->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));

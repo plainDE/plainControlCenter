@@ -168,6 +168,11 @@
          <string>launcher</string>
         </property>
        </item>
+       <item>
+        <property name="text">
+         <string>battery</string>
+        </property>
+       </item>
       </widget>
      </item>
      <item>

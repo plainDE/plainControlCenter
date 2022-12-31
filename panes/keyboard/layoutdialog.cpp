@@ -58,6 +58,9 @@ QWidget* LayoutDialog::createUI(KeyboardPane* kbPane,
     layoutDialog->setGeometry(250, 250, width, height);
 
     QListWidget* availableLayoutList = new QListWidget;
+    availableLayoutList->setStyleSheet("QListView::item:selected { background-color: " + \
+                                       layoutDialogConfig["accent"].toString() + \
+                                       "; color: #ffffff };");
     availableLayoutList->setSelectionMode(QListView::SelectionMode::ExtendedSelection);
     layoutDialog->layout()->addWidget(availableLayoutList);
     availableLayoutList->clear();

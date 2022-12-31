@@ -152,6 +152,17 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
     paneFont.setPointSize(panelsPaneConfig["fontSize"].toInt());
     this->setFont(paneFont);
 
+    // QListWidget's accent
+    ui->panelsListWidget->setStyleSheet("QListView::item:selected { background-color: " + \
+                                        panelsPaneConfig["accent"].toString() + \
+                                        "; color: #ffffff };");
+    ui->availableAppletsListWidget->setStyleSheet("QListView::item:selected { background-color: " + \
+                                                   panelsPaneConfig["accent"].toString() + \
+                                                   "; color: #ffffff };");
+    ui->enabledAppletsListWidget->setStyleSheet("QListView::item:selected { background-color: " + \
+                                                panelsPaneConfig["accent"].toString() + \
+                                                "; color: #ffffff };");
+
     // Applet icons
     iconByApplet["appmenu"] = "app-launcher";
     iconByApplet["windowlist"] = "kwin";
@@ -165,6 +176,7 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
     iconByApplet["localipv4"] = "cs-network";
     iconByApplet["mpris"] = "sound";
     iconByApplet["launcher"] = "terminal";
+    iconByApplet["battery"] = "extensions";
 
     for (qint8 i = 0; i < ui->availableAppletsListWidget->count(); ++i) {
         QListWidgetItem* item = ui->availableAppletsListWidget->item(i);
