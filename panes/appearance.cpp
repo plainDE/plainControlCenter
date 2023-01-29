@@ -104,7 +104,10 @@ void AppearancePane::saveSettings(QListWidget* iconThemeListWidget,
                                   QListWidget* themesListWidget,
                                   QLineEdit* accentLineEdit) {
     // Icon theme
-    appearancePaneConfig["iconTheme"] = QJsonValue(iconThemeListWidget->currentItem()->text());
+    if (!iconThemeListWidget->selectedItems().isEmpty()) {
+        appearancePaneConfig["iconTheme"] = QJsonValue(
+                    iconThemeListWidget->selectedItems()[0]->text());
+    }
 
     // Font
     appearancePaneConfig["fontFamily"] = QJsonValue(fontFamilyComboBox->currentFont().family());
