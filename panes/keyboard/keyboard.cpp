@@ -100,6 +100,7 @@ QWidget* KeyboardPane::createUI(Settings* controlCenter) {
     // UI
     QWidget* keyboardPane = new QWidget;
     keyboardPane->setObjectName("keyboardPane");
+    keyboardPane->setWindowTitle("plainControlCenter");
     QVBoxLayout* layout = new QVBoxLayout;
     layout->setContentsMargins(4, 4, 4, 4);
     keyboardPane->setLayout(layout);
