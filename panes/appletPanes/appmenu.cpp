@@ -161,6 +161,7 @@ QWidget* AppMenuAppletPane::createUI() {
     // UI
     QWidget* appMenuAppletPane = new QWidget;
     appMenuAppletPane->setObjectName("appMenuAppletPane");
+    appMenuAppletPane->setWindowTitle("plainControlCenter");
     QVBoxLayout* layout = new QVBoxLayout;
     layout->setContentsMargins(4, 4, 4, 4);
     appMenuAppletPane->setLayout(layout);

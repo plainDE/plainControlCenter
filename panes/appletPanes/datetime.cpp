@@ -43,6 +43,7 @@ QWidget* DatetimeAppletPane::createUI() {
     // UI
     QWidget* datetimeAppletPane = new QWidget;
     datetimeAppletPane->setObjectName("datetimeAppletPane");
+    datetimeAppletPane->setWindowTitle("plainControlCenter");
     QVBoxLayout* layout = new QVBoxLayout;
     layout->setContentsMargins(4, 4, 4, 4);
     datetimeAppletPane->setLayout(layout);

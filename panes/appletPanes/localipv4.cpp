@@ -48,6 +48,7 @@ QWidget* LocalIPv4AppletPane::createUI() {
     // UI
     QWidget* localIPv4AppletPane = new QWidget;
     localIPv4AppletPane->setObjectName("localIPv4AppletPane");
+    localIPv4AppletPane->setWindowTitle("plainControlCenter");
     QVBoxLayout* layout = new QVBoxLayout;
     layout->setContentsMargins(4, 4, 4, 4);
     localIPv4AppletPane->setLayout(layout);
