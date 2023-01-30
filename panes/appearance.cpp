@@ -131,6 +131,7 @@ QWidget* AppearancePane::createUI(Settings* controlCenter) {
     // UI
     QWidget* appearancePane = new QWidget;
     appearancePane->setObjectName("appearancePane");
+    appearancePane->setWindowTitle("plainControlCenter");
     QVBoxLayout* layout = new QVBoxLayout;
     layout->setContentsMargins(4, 4, 4, 4);
     appearancePane->setLayout(layout);

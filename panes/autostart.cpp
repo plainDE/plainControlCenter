@@ -121,6 +121,7 @@ QWidget* AutostartPane::createUI(Settings* controlCenter) {
     // UI
     QWidget* autostartPane = new QWidget;
     autostartPane->setObjectName("autostartPane");
+    autostartPane->setWindowTitle("plainControlCenter");
     QVBoxLayout* layout = new QVBoxLayout;
     layout->setContentsMargins(4, 4, 4, 4);
     autostartPane->setLayout(layout);
