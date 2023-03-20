@@ -13,14 +13,14 @@ public:
     void createUI();
     ~Settings();
 
-    bool mAppearanceWidgetVisible;
-    bool mAutostartWidgetVisible;
-    bool mPanelsWidgetVisible;
-    bool mKeyboardWidgetVisible;
-    bool mLayoutDgVisible;
-    bool mAppMenuWidgetVisible;
-    bool mDateTimeWidgetVisible;
-    bool mLocalIPv4WidgetVisible;
+    bool mAppearanceWidgetVisible = false;
+    bool mAutostartWidgetVisible = false;
+    bool mPanelsWidgetVisible = false;
+    bool mKeyboardWidgetVisible = false;
+    bool mLayoutDgVisible = false;
+    bool mAppMenuWidgetVisible = false;
+    bool mDateTimeWidgetVisible = false;
+    bool mLocalIPv4WidgetVisible = false;
 };
 
 #endif // SETTINGS_H
