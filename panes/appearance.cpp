@@ -58,7 +58,8 @@ void AppearancePane::setCurrentSettings(QListWidget* iconThemeListWidget,
                                         QFontComboBox* fontFamilyComboBox,
                                         QSpinBox* fontSizeSpinBox,
                                         QListWidget* themesListWidget,
-                                        QLineEdit* accentLineEdit) {
+                                        QLineEdit* accentLineEdit,
+                                        QLineEdit* ipColorLineEdit) {
     // Icon theme
     QString currentRowData = "";
     short i = 0;
@@ -93,16 +94,19 @@ void AppearancePane::setCurrentSettings(QListWidget* iconThemeListWidget,
         }
     }
 
-
     // Accent
     accentLineEdit->setText(appearancePaneConfig["accent"].toString());
+
+    // IP Color
+    ipColorLineEdit->setText(appearancePaneConfig["ipColor"].toString());
 }
 
 void AppearancePane::saveSettings(QListWidget* iconThemeListWidget,
                                   QFontComboBox* fontFamilyComboBox,
                                   QSpinBox* fontSizeSpinBox,
                                   QListWidget* themesListWidget,
-                                  QLineEdit* accentLineEdit) {
+                                  QLineEdit* accentLineEdit,
+                                  QLineEdit* ipColorLineEdit) {
     // Icon theme
     if (!iconThemeListWidget->selectedItems().isEmpty()) {
         appearancePaneConfig["iconTheme"] = QJsonValue(
@@ -121,6 +125,9 @@ void AppearancePane::saveSettings(QListWidget* iconThemeListWidget,
 
     // Accent
     appearancePaneConfig["accent"] = QJsonValue(accentLineEdit->text());
+
+    // IP color
+    appearancePaneConfig["ipColor"] = QJsonValue(ipColorLineEdit->text());
 
     Pane::saveConfig(appearancePaneConfig);
 }
@@ -178,6 +185,13 @@ QWidget* AppearancePane::createUI(Settings* controlCenter) {
     appearancePane->layout()->addWidget(accentLineEdit);
     appearancePane->layout()->addWidget(setAccentPushButton);
 
+    QLabel* ipLabel = new QLabel("IP address color");
+    QLineEdit* ipColorLineEdit = new QLineEdit;
+    QPushButton* setIPColorPushButton = new QPushButton("Choose color...");
+    appearancePane->layout()->addWidget(ipLabel);
+    appearancePane->layout()->addWidget(ipColorLineEdit);
+    appearancePane->layout()->addWidget(setIPColorPushButton);
+
     QPushButton* revertPushButton = new QPushButton("Revert");
     QPushButton* savePushButton = new QPushButton("Save");
     appearancePane->layout()->addWidget(revertPushButton);
@@ -188,30 +202,33 @@ QWidget* AppearancePane::createUI(Settings* controlCenter) {
                        fontFamilyComboBox,
                        fontSizeSpinBox,
                        themesListWidget,
-                       accentLineEdit);
+                       accentLineEdit,
+                       ipColorLineEdit);
 
 
     // Make connections
     appearancePane->connect(savePushButton, &QPushButton::clicked, appearancePane,
                   [this, iconThemeListWidget, fontFamilyComboBox, fontSizeSpinBox,
-                   themesListWidget, accentLineEdit, appearancePane]() {
+                   themesListWidget, accentLineEdit, appearancePane, ipColorLineEdit]() {
         saveSettings(iconThemeListWidget,
                      fontFamilyComboBox,
                      fontSizeSpinBox,
                      themesListWidget,
-                     accentLineEdit);
+                     accentLineEdit,
+                     ipColorLineEdit);
 
         updateStyle(appearancePane);
     });
 
     appearancePane->connect(revertPushButton, &QPushButton::clicked, appearancePane,
                   [this, iconThemeListWidget, fontFamilyComboBox, fontSizeSpinBox,
-                   themesListWidget, accentLineEdit]() {
+                   themesListWidget, accentLineEdit, ipColorLineEdit]() {
         setCurrentSettings(iconThemeListWidget,
                            fontFamilyComboBox,
                            fontSizeSpinBox,
                            themesListWidget,
-                           accentLineEdit);
+                           accentLineEdit,
+                           ipColorLineEdit);
     });
 
     appearancePane->connect(backPushButton, &QPushButton::clicked, appearancePane,
@@ -226,6 +243,13 @@ QWidget* AppearancePane::createUI(Settings* controlCenter) {
                             [colorDialog, accentLineEdit]() {
         if (colorDialog->exec() == QColorDialog::Accepted) {
             accentLineEdit->setText(QVariant(colorDialog->currentColor()).toString());
+        }
+    });
+
+    appearancePane->connect(setIPColorPushButton, &QPushButton::clicked, appearancePane,
+                            [colorDialog, ipColorLineEdit]() {
+        if (colorDialog->exec() == QColorDialog::Accepted) {
+            ipColorLineEdit->setText(QVariant(colorDialog->currentColor()).toString());
         }
     });
 

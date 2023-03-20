@@ -13,14 +13,16 @@ public:
                             QFontComboBox* fontFamilyComboBox,
                             QSpinBox* fontSizeSpinBox,
                             QListWidget* themesListWidget,
-                            QLineEdit* accentLineEdit);
+                            QLineEdit* accentLineEdit,
+                            QLineEdit* ipColorLineEdit);
     void prepareUI(QListWidget* iconThemesListWidget,
                    QListWidget* themesListWidget);
     void saveSettings(QListWidget* iconThemesListWidget,
                       QFontComboBox* fontFamilyComboBox,
                       QSpinBox* fontSizeSpinBox,
                       QListWidget* themesListWidget,
-                      QLineEdit* accentLineEdit);
+                      QLineEdit* accentLineEdit,
+                      QLineEdit* ipColorLineEdit);
 
 };
 

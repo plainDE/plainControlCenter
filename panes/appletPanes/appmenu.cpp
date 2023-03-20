@@ -108,7 +108,7 @@ void AppMenuAppletPane::setCurrentSettings(QLineEdit* buttonTextLineEdit,
     makePreview(previewButton, buttonIconLineEdit, LineEditType::Icon);
 
     useTriangularTabsCheckBox->setChecked(
-                appMenuAppletConfig["appMenuTriangularTabs"].toBool());
+                appMenuAppletConfig["useTriangularTabs"].toBool());
 }
 
 void AppMenuAppletPane::addEntry(QListWidget* allAppsListWidget,
@@ -149,7 +149,7 @@ void AppMenuAppletPane::saveSettings(QLineEdit* buttonTextLineEdit,
 
     appMenuAppletConfig["favApps"] = QJsonValue::fromVariant(QVariant(favApps));
 
-    appMenuAppletConfig["appMenuTriangularTabs"] = QJsonValue(
+    appMenuAppletConfig["useTriangularTabs"] = QJsonValue(
                                         useTriangularTabsCheckBox->isChecked());
 
     Pane::saveConfig(appMenuAppletConfig);
