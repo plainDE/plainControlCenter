@@ -97,6 +97,8 @@ void KeyboardPane::prepareUI(QListWidget* layoutSwitchShortcut) {
 QWidget* KeyboardPane::createUI(Settings* controlCenter) {
     readConfig();
 
+    mControlCenter = controlCenter;
+
     // UI
     QWidget* keyboardPane = new QWidget;
     keyboardPane->setObjectName("keyboardPane");
@@ -120,7 +122,7 @@ QWidget* KeyboardPane::createUI(Settings* controlCenter) {
     short width = 400, height = 500;
     keyboardPane->setGeometry(250, 250, width, height);
 
-    QPushButton* backPushButton = new QPushButton("Back");
+    QPushButton* backPushButton = new QPushButton("Close");
     backPushButton->setIcon(QIcon::fromTheme("go-previous"));
     keyboardPane->layout()->addWidget(backPushButton);
 
@@ -189,7 +191,8 @@ QWidget* KeyboardPane::createUI(Settings* controlCenter) {
 
     keyboardPane->connect(backPushButton, &QPushButton::clicked, keyboardPane,
                   [keyboardPane, layoutDg, controlCenter]() {
-        controlCenter->controlCenterWidget->show();
+        controlCenter->mKeyboardWidgetVisible = false;
+        controlCenter->mLayoutDgVisible = false;
         keyboardPane->hide();
         delete layoutDg;
         delete keyboardPane;
@@ -218,8 +221,11 @@ QWidget* KeyboardPane::createUI(Settings* controlCenter) {
     });
 
     keyboardPane->connect(addLayoutPushButton, &QPushButton::clicked, keyboardPane,
-                          [layoutDgWidget]() {
-        layoutDgWidget->show();
+                          [layoutDgWidget, controlCenter]() {
+        if (!controlCenter->mLayoutDgVisible) {
+            controlCenter->mLayoutDgVisible = true;
+            controlCenter->layout()->addWidget(layoutDgWidget);
+        }
     });
 
     keyboardPane->connect(removeLayoutPushButton, &QPushButton::clicked, keyboardPane,

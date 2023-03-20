@@ -144,7 +144,7 @@ QWidget* AppearancePane::createUI(Settings* controlCenter) {
 
     QPushButton* backPushButton = new QPushButton;
     backPushButton->setIcon(QIcon::fromTheme("go-previous"));
-    backPushButton->setText(" Back");
+    backPushButton->setText(" Close");
     appearancePane->layout()->addWidget(backPushButton);
 
     QLabel* iconThemeLabel = new QLabel("Icon theme");
@@ -217,7 +217,7 @@ QWidget* AppearancePane::createUI(Settings* controlCenter) {
     appearancePane->connect(backPushButton, &QPushButton::clicked, appearancePane,
                   [appearancePane, controlCenter]() {
         controlCenter->updateStyle();
-        controlCenter->controlCenterWidget->show();
+        controlCenter->mAppearanceWidgetVisible = false;
         appearancePane->hide();
         delete appearancePane;
     });

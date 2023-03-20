@@ -34,43 +34,42 @@ QWidget* LayoutDialog::createUI(KeyboardPane* kbPane,
 
 
     // UI
-    QWidget* layoutDialog = new QWidget;
-    layoutDialog->setObjectName("layoutDialog");
-    layoutDialog->setWindowTitle("Select layouts");
+    this->setObjectName("layoutDialog");
+    this->setWindowTitle("Select layouts");
     QVBoxLayout* layout = new QVBoxLayout;
     layout->setContentsMargins(4, 4, 4, 4);
-    layoutDialog->setLayout(layout);
+    this->setLayout(layout);
 
 
     // Theme
     QFile stylesheetReader("/usr/share/plainDE/styles/" + layoutDialogConfig["theme"].toString());
     stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream styleSheet(&stylesheetReader);
-    layoutDialog->setStyleSheet(styleSheet.readAll());
+    this->setStyleSheet(styleSheet.readAll());
     stylesheetReader.close();
 
     QFont paneFont;
     paneFont.setFamily(layoutDialogConfig["fontFamily"].toString());
     paneFont.setPointSize(layoutDialogConfig["fontSize"].toInt());
-    layoutDialog->setFont(paneFont);
+    this->setFont(paneFont);
 
     short width = 350, height = 300;
-    layoutDialog->setGeometry(250, 250, width, height);
+    this->setGeometry(250, 250, width, height);
 
     QListWidget* availableLayoutList = new QListWidget;
     availableLayoutList->setStyleSheet("QListView::item:selected { background-color: " + \
                                        layoutDialogConfig["accent"].toString() + \
                                        "; color: #ffffff };");
     availableLayoutList->setSelectionMode(QListView::SelectionMode::ExtendedSelection);
-    layoutDialog->layout()->addWidget(availableLayoutList);
+    this->layout()->addWidget(availableLayoutList);
     availableLayoutList->clear();
     foreach (QString currentLayout, layoutList.keys()) {
         availableLayoutList->addItem(currentLayout);
     }
 
     QPushButton* addLayoutsPushButton = new QPushButton("Add layouts");
-    layoutDialog->layout()->addWidget(addLayoutsPushButton);
-    layoutDialog->connect(addLayoutsPushButton, &QPushButton::clicked, layoutDialog,
+    this->layout()->addWidget(addLayoutsPushButton);
+    this->connect(addLayoutsPushButton, &QPushButton::clicked, this,
                           [availableLayoutList, kbPane, activeLayoutsListWidget]() {
         if (!availableLayoutList->selectedItems().isEmpty()) {
             for (qint8 i = 0; i < availableLayoutList->selectedItems().length(); ++i) {
@@ -80,8 +79,11 @@ QWidget* LayoutDialog::createUI(KeyboardPane* kbPane,
         }
     });
 
+    return this;
+}
 
-    return layoutDialog;
+LayoutDialog::LayoutDialog(QWidget* parent) : QWidget(parent) {
+
 }
 
 LayoutDialog::~LayoutDialog() {

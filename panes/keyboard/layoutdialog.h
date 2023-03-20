@@ -5,12 +5,14 @@
 #include "../../pane.h"
 
 
-class LayoutDialog {
+class LayoutDialog : public QWidget {
 public:
     void readConfig();
     void prepareUI();
     QWidget* createUI(KeyboardPane* kbPane,
                       QListWidget* layoutsListWidget);
+
+    LayoutDialog(QWidget* parent = nullptr);
 
     virtual ~LayoutDialog();
 };

@@ -141,7 +141,7 @@ QWidget* AutostartPane::createUI(Settings* controlCenter) {
     short width = 400, height = 500;
     autostartPane->setGeometry(250, 250, width, height);
 
-    QPushButton* backPushButton = new QPushButton("Back");
+    QPushButton* backPushButton = new QPushButton("Close");
     backPushButton->setIcon(QIcon::fromTheme("go-previous"));
     autostartPane->layout()->addWidget(backPushButton);
 
@@ -180,7 +180,7 @@ QWidget* AutostartPane::createUI(Settings* controlCenter) {
     // Make connections
     autostartPane->connect(backPushButton, &QPushButton::clicked, autostartPane,
                            [autostartPane, controlCenter]() {
-        controlCenter->controlCenterWidget->show();
+        controlCenter->mAutostartWidgetVisible = false;
         autostartPane->hide();
         delete autostartPane;
     });

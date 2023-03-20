@@ -17,6 +17,8 @@ public:
                       QListWidget* layoutList,
                       QListWidget* layoutSwitchShortcut);
     void addLayout(QString layoutName, QListWidget* layoutList);
+
+    Settings* mControlCenter;
 };
 
 #endif // KEYBOARD_H

@@ -17,7 +17,7 @@
    <item>
     <widget class="QPushButton" name="backPushButton">
      <property name="text">
-      <string> Back</string>
+      <string> Close</string>
      </property>
      <property name="icon">
       <iconset theme="go-previous">
@@ -28,7 +28,7 @@
    <item>
     <widget class="QLabel" name="panelsLabel">
      <property name="text">
-      <string>Panels (max 2)</string>
+      <string>Panels (max 4)</string>
      </property>
     </widget>
    </item>
@@ -173,6 +173,11 @@
          <string>battery</string>
         </property>
        </item>
+       <item>
+        <property name="text">
+         <string>sni</string>
+        </property>
+       </item>
       </widget>
      </item>
      <item>
@@ -315,12 +320,12 @@
        <item>
         <widget class="QLabel" name="xOffsetLabel">
          <property name="text">
-          <string>X offset</string>
+          <string>Axis shift</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QSpinBox" name="xOffsetSpinBox">
+        <widget class="QSpinBox" name="shiftSpinBox">
          <property name="maximum">
           <number>16777215</number>
          </property>
@@ -335,9 +340,19 @@
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
-        <widget class="QLabel" name="heightLabel">
+        <widget class="QLabel" name="thicknessLabel">
          <property name="text">
-          <string>Panel height</string>
+          <string>Panel thickness</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="thicknessSpinBox">
+         <property name="maximum">
+          <number>256</number>
+         </property>
+         <property name="value">
+          <number>0</number>
          </property>
         </widget>
        </item>
@@ -355,14 +370,14 @@
         </spacer>
        </item>
        <item>
-        <widget class="QSpinBox" name="heightSpinBox">
-         <property name="maximum">
-          <number>256</number>
-         </property>
-         <property name="value">
-          <number>0</number>
+        <widget class="QLabel" name="spacingLabel">
+         <property name="text">
+          <string>Spacing between applets</string>
          </property>
         </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="spacingSpinBox"/>
        </item>
       </layout>
      </item>
@@ -379,18 +394,36 @@
         </widget>
        </item>
        <item>
-        <widget class="QRadioButton" name="topRadioButton">
-         <property name="text">
-          <string>Top</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QRadioButton" name="bottomRadioButton">
-         <property name="text">
-          <string>Bottom</string>
-         </property>
-        </widget>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="1" column="0">
+          <widget class="QRadioButton" name="bottomRadioButton">
+           <property name="text">
+            <string>Bottom</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QRadioButton" name="topRadioButton">
+           <property name="text">
+            <string>Top</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QRadioButton" name="leftRadioButton">
+           <property name="text">
+            <string>Left</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QRadioButton" name="rightRadioButton">
+           <property name="text">
+            <string>Right</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </item>

@@ -16,6 +16,7 @@
 
 QJsonObject panelsPaneConfig;
 QHash<QString,QString> iconByApplet;
+QHash<QString,QString> nameByApplet;
 
 void PanelsPane::readConfig() {
     QString homeDirectory = getenv("HOME");
@@ -75,21 +76,30 @@ void PanelsPane::setCurrentSettings(qint8 panelNumber) {
     }
 
     // X Offset
-    ui->xOffsetSpinBox->setValue(panelsPaneConfig[panelName].toObject()["xOffset"].toInt());
+    ui->shiftSpinBox->setValue(panelsPaneConfig[panelName].toObject()["shift"].toInt());
 
     // Panel height
-    ui->heightSpinBox->setValue(panelsPaneConfig[panelName].toObject()["height"].toInt());
+    ui->thicknessSpinBox->setValue(panelsPaneConfig[panelName].toObject()["thickness"].toInt());
 
     // Panel location
     if (panelsPaneConfig[panelName].toObject()["location"].toString() == "top") {
         ui->topRadioButton->setChecked(true);
     }
-    else {
+    else if (panelsPaneConfig[panelName].toObject()["location"].toString() == "bottom") {
         ui->bottomRadioButton->setChecked(true);
+    }
+    else if (panelsPaneConfig[panelName].toObject()["location"].toString() == "left") {
+        ui->leftRadioButton->setChecked(true);
+    }
+    else { // right
+        ui->rightRadioButton->setChecked(true);
     }
 
     // Panel opacity
     ui->opacitySpinBox->setValue(panelsPaneConfig[panelName].toObject()["opacity"].toDouble());
+
+    // Spacing between applets
+    ui->spacingSpinBox->setValue(panelsPaneConfig[panelName].toObject()["spacing"].toInt());
 }
 
 void PanelsPane::saveSettings(qint8 panelNumber) {
@@ -111,21 +121,31 @@ void PanelsPane::saveSettings(qint8 panelNumber) {
     panelObject["expand"] = QJsonValue(ui->expandCheckBox->isChecked());
 
     // X Offset
-    panelObject["xOffset"] = QJsonValue(ui->xOffsetSpinBox->value());
+    panelObject["shift"] = QJsonValue(ui->shiftSpinBox->value());
 
     // Panel height
-    panelObject["height"] = QJsonValue(ui->heightSpinBox->value());
+    panelObject["thickness"] = QJsonValue(ui->thicknessSpinBox->value());
 
     // Panel location
     if (ui->topRadioButton->isChecked()) {
         panelObject["location"] = QJsonValue("top");
     }
-    else {
+    else if (ui->bottomRadioButton->isChecked()) {
         panelObject["location"] = QJsonValue("bottom");
+    }
+    else if (ui->leftRadioButton->isChecked()) {
+        panelObject["location"] = QJsonValue("left");
+    }
+    else { // right
+        panelObject["location"] = QJsonValue("right");
     }
 
     // Panel opacity
     panelObject["opacity"] = QJsonValue(ui->opacitySpinBox->value());
+
+    // Spacing between applets
+    panelObject["spacing"] = QJsonValue(ui->spacingSpinBox->value());
+
 
     panelsPaneConfig[panelName] = panelObject;
     Pane::saveConfig(panelsPaneConfig);
@@ -177,6 +197,24 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
     iconByApplet["mpris"] = "sound";
     iconByApplet["launcher"] = "terminal";
     iconByApplet["battery"] = "extensions";
+    iconByApplet["sni"] = "extensions";
+
+    // Applet human-readable names
+    nameByApplet["appmenu"] = "App Menu";
+    nameByApplet["windowlis"] = "Window List";
+    nameByApplet["spacer"] = "Spacer";
+    nameByApplet["workspaces"] = "Workspaces Indicator";
+    nameByApplet["volume"] = "Volume Dial";
+    nameByApplet["kblayout"] = "Keyboard Layout Indicator";
+    nameByApplet["datetime"] = "Date & Time";
+    nameByApplet["splitter"] = "Splitter (|)";
+    nameByApplet["usermenu"] = "User Menu";
+    nameByApplet["localipv4"] = "Local IPv4 Indicator";
+    nameByApplet["mpris"] = "Playback Control";
+    nameByApplet["launcher"] = "Launcher";
+    nameByApplet["battery"] = "Battery Indicator";
+    nameByApplet["sni"] = "SNI tray";
+
 
     for (qint8 i = 0; i < ui->availableAppletsListWidget->count(); ++i) {
         QListWidgetItem* item = ui->availableAppletsListWidget->item(i);
@@ -185,15 +223,14 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
 
     // List panels
     ui->panelsListWidget->clear();
-    if (panelsPaneConfig.contains("panel1")) {
-        ui->panelsListWidget->addItem("Panel 1");
-    }
-    if (panelsPaneConfig.contains("panel2")) {
-        ui->panelsListWidget->addItem("Panel 2");
+    for (int i = 1; i <= panelsPaneConfig["countPanels"].toInt(); ++i) {
+        if (!panelsPaneConfig["panel" + QString::number(i)].isNull()) {
+            ui->panelsListWidget->addItem("Panel " + QString::number(i));
+        }
     }
 
-    // Set max X offset
-    ui->xOffsetSpinBox->setMaximum(QGuiApplication::primaryScreen()->geometry().width());
+    // Set max shift
+    ui->shiftSpinBox->setMaximum(QGuiApplication::primaryScreen()->geometry().width());
 
     // Make connections
     this->connect(ui->panelsListWidget, &QListWidget::itemClicked, this,
@@ -205,20 +242,23 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
 
     this->connect(ui->backPushButton, &QPushButton::clicked, this,
                   [this, controlCenter]() {
+        controlCenter->mPanelsWidgetVisible = false;
         this->hide();
-        controlCenter->controlCenterWidget->show();
+        delete this;
     });
 
     this->connect(ui->addPanelPushButton, &QPushButton::clicked, this,
                   [this]() {
-        if (ui->panelsListWidget->count() < 2) {
+        if (ui->panelsListWidget->count() < 4) {
             QJsonObject panelObject;
             QString panelName, visibleName;
             qint8 newPanelNumber;
             panelObject["expand"] = QJsonValue(true);
-            panelObject["xOffset"] = QJsonValue(0);
-            panelObject["height"] = QJsonValue(28);
+            panelObject["shift"] = QJsonValue(0);
+            panelObject["thickness"] = QJsonValue(28);
             panelObject["opacity"] = QJsonValue(0.85);
+            panelObject["launcherIconSize"] = QJsonValue(22);
+            panelObject["spacing"] = QJsonValue(5);
 
             if (ui->panelsListWidget->count() == 0) {
                 newPanelNumber = 1;
@@ -227,29 +267,41 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
                 panelObject["location"] = QJsonValue("top");
             }
             else {
-                QString existingVisibleName = ui->panelsListWidget->item(0)->text();
+                QString existingVisibleName = ui->panelsListWidget->item(ui->panelsListWidget->count() - 1)->text();
                 qint8 existingPanelNumber = existingVisibleName.midRef(6, 6).toInt();
-                newPanelNumber = existingPanelNumber == 1 ? 2 : 1;
+                newPanelNumber = existingPanelNumber + 1;
                 panelName = "panel" + QString::number(newPanelNumber);
                 visibleName = "Panel " + QString::number(newPanelNumber);
 
-                if (panelsPaneConfig["panel" + QString::number(existingPanelNumber)].toObject()["location"] == "top") {
+                QStringList busyLocations;
+                for (int i = 0; i < ui->panelsListWidget->count(); ++i) {
+                    qint8 currentPanelNumber = ui->panelsListWidget->item(i)->text().midRef(6, 6).toInt();
+                    busyLocations.append(panelsPaneConfig["panel" + QString::number(currentPanelNumber)].toObject()["location"].toString());
+                }
+
+                if (!busyLocations.contains("top")) {
+                    panelObject["location"] = QJsonValue("top");
+                }
+                else if (!busyLocations.contains("bottom")) {
                     panelObject["location"] = QJsonValue("bottom");
                 }
-                else {
-                    panelObject["location"] = QJsonValue("top");
+                else if (!busyLocations.contains("left")) {
+                    panelObject["location"] = QJsonValue("left");
+                }
+                else { // right
+                    panelObject["location"] = QJsonValue("right");
                 }
             }
 
             panelsPaneConfig[panelName] = panelObject;
             ui->panelsListWidget->addItem(visibleName);
             setCurrentSettings(newPanelNumber);
-            ui->panelsListWidget->setCurrentRow(1);
+            ui->panelsListWidget->setCurrentRow(ui->panelsListWidget->count() - 1);
         }
         else {
             QMessageBox msg;
             msg.setWindowTitle("Error");
-            msg.setText("2 panels maximum allowed.");
+            msg.setText("4 panels maximum allowed.");
             msg.setStandardButtons(QMessageBox::Ok);
             msg.setIcon(QMessageBox::Critical);
             msg.exec();
@@ -265,8 +317,8 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
                 panelsPaneConfig.remove("panel" + QString::number(delPanelNumber));
                 delete delPanelItem;
 
-                setCurrentSettings(delPanelNumber == 2 ? 1 : 2);
-                ui->panelsListWidget->setCurrentRow(0);
+                setCurrentSettings(ui->panelsListWidget->count());
+                ui->panelsListWidget->setCurrentRow(ui->panelsListWidget->count() - 1);
             }
         }
         else {
@@ -419,11 +471,11 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
     this->connect(ui->expandCheckBox, &QCheckBox::toggled, this,
                   [this]() {
         if (ui->expandCheckBox->isChecked()) {
-            ui->xOffsetSpinBox->setEnabled(false);
-            ui->xOffsetSpinBox->setValue(0);
+            ui->shiftSpinBox->setEnabled(false);
+            ui->shiftSpinBox->setValue(0);
         }
         else {
-            ui->xOffsetSpinBox->setEnabled(true);
+            ui->shiftSpinBox->setEnabled(true);
         }
     });
 

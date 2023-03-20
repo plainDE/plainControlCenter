@@ -2,18 +2,22 @@
 #define SETTINGS_H
 
 #include <QWidget>
-#include <QJsonObject>
 
-class Settings {
+class Settings : public QWidget {
+    Q_OBJECT
+
 public:
-    Settings();
+    Settings(QWidget* parent = nullptr);
     void updateStyle();
     void readConfig();
     void createUI();
     ~Settings();
 
-public:
-    QWidget* controlCenterWidget;
-
+    bool mAppearanceWidgetVisible;
+    bool mAutostartWidgetVisible;
+    bool mPanelsWidgetVisible;
+    bool mKeyboardWidgetVisible;
+    bool mLayoutDgVisible;
 };
+
 #endif // SETTINGS_H

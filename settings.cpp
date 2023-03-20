@@ -47,98 +47,95 @@ void Settings::updateStyle() {
     QFile stylesheetReader("/usr/share/plainDE/styles/" + config["theme"].toString());
     stylesheetReader.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream styleSheet(&stylesheetReader);
-    controlCenterWidget->setStyleSheet(styleSheet.readAll());
+    this->setStyleSheet(styleSheet.readAll());
     stylesheetReader.close();
 
     // Font
     controlCenterFont.setFamily(config["fontFamily"].toString());
     controlCenterFont.setPointSize(config["fontSize"].toInt());
-    controlCenterWidget->setFont(controlCenterFont);
+    this->setFont(controlCenterFont);
 }
 
 void Settings::createUI() {
-    controlCenterWidget = new QWidget;
-    controlCenterWidget->setObjectName("controlCenter");
-    controlCenterWidget->setWindowTitle("plainControlCenter");
+    this->setObjectName("controlCenter");
+    this->setWindowTitle("plainControlCenter");
 
     // Geometry
-    short width = 400, height = 500;
-    controlCenterWidget->setGeometry(250, 250, width, height);
+    short width = 600, height = 500;
+    this->setGeometry(250, 250, width, height);
 
     // Appearance
     updateStyle();
 
     // UI
-    QVBoxLayout* layout = new QVBoxLayout;
-    layout->setContentsMargins(4, 4, 4, 4);
-    controlCenterWidget->setLayout(layout);
+    QHBoxLayout* mainLayout = new QHBoxLayout(this);
+    mainLayout->setContentsMargins(4, 4, 4, 4);
+    mainLayout->setSpacing(3);
 
     QListWidget* entriesListWidget = new QListWidget;
     entriesListWidget->setStyleSheet("QListView::item:selected { background-color: " + \
                                      config["accent"].toString() + \
                                      "; color: #ffffff };");
 
-    // Sound - play startup sound, alsa, pulseaudio
-
     Entry entries[12] = {
-                            //{"Network", QIcon::fromTheme("preferences-system-network")},
                             {"Appearance", QIcon::fromTheme("preferences-desktop-theme")},
-                            //{"Sound", QIcon::fromTheme("audio-volume-high")},
-                            //{"Display", QIcon::fromTheme("video-display")},
                             {"Keyboard", QIcon::fromTheme("preferences-desktop-keyboard")},
-                            //{"Date & Time", QIcon::fromTheme("x-office-calendar")},
-                            //{"Language", QIcon::fromTheme("preferences-desktop-locale")},
                             {"Autostart", QIcon::fromTheme("applications-utilities")},
                             {"Panels", QIcon::fromTheme("panel")},
-                            //{"Developer settings", QIcon::fromTheme("utilities-terminal")},
-                            //{"Default applications", QIcon::fromTheme("emblem-default")},
                             {"About", QIcon("/usr/share/plainDE/menuIcon.png")}
                         };
 
-    for (short i = 0; i < 6; ++i) {
+    for (short i = 0; i < 5; ++i) {
         entriesListWidget->addItem(entries[i].name);
         entriesListWidget->item(i)->setIcon(entries[i].icon);
     }
 
-    QProcess* process = new QProcess(controlCenterWidget);
+    QProcess* process = new QProcess(this);
+
+    mainLayout->addWidget(entriesListWidget);
+    this->show();
 
     // Make connections
-    controlCenterWidget->connect(entriesListWidget, &QListWidget::itemDoubleClicked, controlCenterWidget,
-               [this, entriesListWidget, process]() {
+    this->connect(entriesListWidget, &QListWidget::itemClicked, this,
+               [this, mainLayout, entriesListWidget, process]() {
         if (entriesListWidget->selectedItems()[0]->text() == "Appearance") {
-            AppearancePane* appearancePane = new AppearancePane;
-            QWidget* appearanceWidget = appearancePane->createUI(this);
-            appearanceWidget->show();
-            controlCenterWidget->hide();
+            if (!mAppearanceWidgetVisible) {
+                mAppearanceWidgetVisible = true;
+                AppearancePane* appearancePane = new AppearancePane;
+                QWidget* appearanceWidget = appearancePane->createUI(this);
+                mainLayout->addWidget(appearanceWidget);
+            }
         }
         else if (entriesListWidget->selectedItems()[0]->text() == "Autostart") {
-            AutostartPane* autostartPane = new AutostartPane;
-            QWidget* autostartWidget = autostartPane->createUI(this);
-            autostartWidget->show();
-            controlCenterWidget->hide();
+            if (!mAutostartWidgetVisible) {
+                mAutostartWidgetVisible = true;
+                AutostartPane* autostartPane = new AutostartPane;
+                QWidget* autostartWidget = autostartPane->createUI(this);
+                mainLayout->addWidget(autostartWidget);
+            }
         }
         else if (entriesListWidget->selectedItems()[0]->text() == "Panels") {
-            PanelsPane* panelsPane = new PanelsPane(nullptr, this);
-            panelsPane->show();
-            controlCenterWidget->hide();
+            if (!mPanelsWidgetVisible) {
+                mPanelsWidgetVisible = true;
+                PanelsPane* panelsPane = new PanelsPane(nullptr, this);
+                mainLayout->addWidget(panelsPane);
+            }
         }
         else if (entriesListWidget->selectedItems()[0]->text() == "Keyboard") {
-            KeyboardPane* keyboardPane = new KeyboardPane;
-            QWidget* keyboardWidget = keyboardPane->createUI(this);
-            keyboardWidget->show();
-            controlCenterWidget->hide();
+            if (!mKeyboardWidgetVisible) {
+                mKeyboardWidgetVisible = true;
+                KeyboardPane* keyboardPane = new KeyboardPane;
+                QWidget* keyboardWidget = keyboardPane->createUI(this);
+                mainLayout->addWidget(keyboardWidget);
+            }
         }
         else if (entriesListWidget->selectedItems()[0]->text() == "About") {
             process->start("plainAbout --plainControlCenter");
         }
     });
-
-    controlCenterWidget->layout()->addWidget(entriesListWidget);
-    controlCenterWidget->show();
 }
 
-
-Settings::Settings() {
+Settings::Settings(QWidget *parent) : QWidget(parent) {
     readConfig();
     QIcon::setThemeName(config["iconTheme"].toString());
     createUI();
@@ -147,4 +144,3 @@ Settings::Settings() {
 Settings::~Settings() {
 
 }
-
