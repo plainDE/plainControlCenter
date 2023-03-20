@@ -217,7 +217,7 @@ QWidget* AppMenuAppletPane::createUI() {
     QPushButton* removeEntryPushButton = new QPushButton("Remove");
     appMenuAppletPane->layout()->addWidget(removeEntryPushButton);
 
-    QCheckBox* useTriangularTabsCheckBox = new QCheckBox("Use triangular tabs (uncheck only on light theme)");
+    QCheckBox* useTriangularTabsCheckBox = new QCheckBox("Use triangular tabs");
     appMenuAppletPane->layout()->addWidget(useTriangularTabsCheckBox);
 
     QPushButton* revertPushButton = new QPushButton("Revert");
