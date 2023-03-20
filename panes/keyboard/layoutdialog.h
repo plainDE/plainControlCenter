@@ -3,13 +3,15 @@
 
 #include "keyboard.h"
 #include "../../pane.h"
+#include "../../settings.h"
 
 
 class LayoutDialog : public QWidget {
 public:
     void readConfig();
     void prepareUI();
-    QWidget* createUI(KeyboardPane* kbPane,
+    QWidget* createUI(Settings* controlCenter,
+                      KeyboardPane* kbPane,
                       QListWidget* layoutsListWidget);
 
     LayoutDialog(QWidget* parent = nullptr);

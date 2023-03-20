@@ -4,6 +4,10 @@
 #include "../pane.h"
 #include "../settings.h"
 
+#include "appletPanes/appmenu.h"
+#include "appletPanes/datetime.h"
+#include "appletPanes/localipv4.h"
+
 namespace Ui {
 class PanelsPane;
 }
@@ -17,6 +21,11 @@ public:
     void setCurrentSettings(qint8 panelNumber);
     void saveSettings(qint8 panelNumber);
     ~PanelsPane();
+
+    AppMenuAppletPane* mAppMenuAppletPane;
+    DatetimeAppletPane* mDatetimeAppletPane;
+    LocalIPv4AppletPane* mLocalIPv4AppletPane;
+
 
 private:
     Ui::PanelsPane *ui;

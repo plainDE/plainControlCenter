@@ -42,7 +42,7 @@ void LocalIPv4AppletPane::saveSettings(QListWidget* ifaceList) {
     Pane::saveConfig(localIPv4AppletPaneConfig);
 }
 
-QWidget* LocalIPv4AppletPane::createUI() {
+QWidget* LocalIPv4AppletPane::createUI(Settings* controlCenter) {
     readConfig();
 
     // UI
@@ -67,6 +67,10 @@ QWidget* LocalIPv4AppletPane::createUI() {
 
     short width = 400, height = 500;
     localIPv4AppletPane->setGeometry(650, 250, width, height);
+
+    QPushButton* backPushButton = new QPushButton("Close");
+    backPushButton->setIcon(QIcon::fromTheme("go-previous"));
+    layout->addWidget(backPushButton);
 
     QLabel* selectLabel = new QLabel("Select desired network interface:");
     layout->addWidget(selectLabel);
@@ -94,6 +98,12 @@ QWidget* LocalIPv4AppletPane::createUI() {
     localIPv4AppletPane->connect(savePushButton, &QPushButton::clicked, localIPv4AppletPane,
                                  [this, ifaceList]() {
         saveSettings(ifaceList);
+    });
+    localIPv4AppletPane->connect(backPushButton, &QPushButton::clicked, localIPv4AppletPane,
+                                 [this, localIPv4AppletPane, controlCenter]() {
+        controlCenter->mLocalIPv4WidgetVisible = false;
+        delete localIPv4AppletPane;
+        delete this;
     });
 
     return localIPv4AppletPane;

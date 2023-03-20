@@ -33,8 +33,8 @@ void AppMenuAppletPane::makePreview(QPushButton* previewButton,
     }
 }
 
-App readDesktopEntry(QString pathToCurrentDesktopFile) {
-    App myApp;
+Application readDesktopEntry(QString pathToCurrentDesktopFile) {
+    Application myApp;
     QString iconPath;
 
     QSettings desktopFileReader(pathToCurrentDesktopFile, QSettings::IniFormat);
@@ -67,7 +67,7 @@ void AppMenuAppletPane::prepareUI(QListWidget* allAppsListWidget,
     favEntries = appMenuAppletConfig["favApps"].toVariant().toStringList();
 
     QString pathToCurrentDesktopFile;
-    App currentApp;
+    Application currentApp;
 
     desktopFilesList.removeFirst();
     desktopFilesList.removeFirst();
@@ -155,7 +155,7 @@ void AppMenuAppletPane::saveSettings(QLineEdit* buttonTextLineEdit,
     Pane::saveConfig(appMenuAppletConfig);
 }
 
-QWidget* AppMenuAppletPane::createUI() {
+QWidget* AppMenuAppletPane::createUI(Settings* controlCenter) {
     readConfig();
 
     // UI
@@ -180,6 +180,10 @@ QWidget* AppMenuAppletPane::createUI() {
 
     short width = 400, height = 500;
     appMenuAppletPane->setGeometry(650, 250, width, height);
+
+    QPushButton* backPushButton = new QPushButton("Close");
+    backPushButton->setIcon(QIcon::fromTheme("go-previous"));
+    appMenuAppletPane->layout()->addWidget(backPushButton);
 
     QLabel* buttonTextLabel = new QLabel("Button text");
     QLineEdit* buttonTextLineEdit = new QLineEdit;
@@ -217,7 +221,7 @@ QWidget* AppMenuAppletPane::createUI() {
     QPushButton* removeEntryPushButton = new QPushButton("Remove");
     appMenuAppletPane->layout()->addWidget(removeEntryPushButton);
 
-    QCheckBox* useTriangularTabsCheckBox = new QCheckBox("Use triangular tabs (uncheck only on light theme)");
+    QCheckBox* useTriangularTabsCheckBox = new QCheckBox("Use triangular tabs");
     appMenuAppletPane->layout()->addWidget(useTriangularTabsCheckBox);
 
     QPushButton* revertPushButton = new QPushButton("Revert");
@@ -232,6 +236,12 @@ QWidget* AppMenuAppletPane::createUI() {
 
 
     // Make connections
+    appMenuAppletPane->connect(backPushButton, &QPushButton::clicked, appMenuAppletPane, [this, appMenuAppletPane, controlCenter]() {
+        controlCenter->mAppMenuWidgetVisible = false;
+        delete appMenuAppletPane;
+        delete this;
+    });
+
     appMenuAppletPane->connect(buttonTextLineEdit, &QLineEdit::textEdited, appMenuAppletPane,
                                [this, previewButton, buttonTextLineEdit]() {
         makePreview(previewButton, buttonTextLineEdit, LineEditType::Text);

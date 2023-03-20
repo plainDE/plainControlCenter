@@ -18,6 +18,9 @@ public:
     bool mPanelsWidgetVisible;
     bool mKeyboardWidgetVisible;
     bool mLayoutDgVisible;
+    bool mAppMenuWidgetVisible;
+    bool mDateTimeWidgetVisible;
+    bool mLocalIPv4WidgetVisible;
 };
 
 #endif // SETTINGS_H

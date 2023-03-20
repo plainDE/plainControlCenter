@@ -2,6 +2,7 @@
 #define LOCALIPV4_H
 
 #include "../../pane.h"
+#include "../../settings.h"
 #include <QNetworkInterface>
 
 class LocalIPv4AppletPane {
@@ -10,7 +11,7 @@ public:
     void prepareUI(QListWidget* ifaceList);
     void setCurrentSettings(QListWidget* ifaceList);
     void saveSettings(QListWidget* ifaceList);
-    QWidget* createUI();
+    QWidget* createUI(Settings* controlCenter);
 };
 
 #endif // LOCALIPV4_H

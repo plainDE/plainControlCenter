@@ -17,7 +17,8 @@ void LayoutDialog::readConfig() {
     layoutDialogConfig = QJsonDocument::fromJson(data.toUtf8()).object();
 }
 
-QWidget* LayoutDialog::createUI(KeyboardPane* kbPane,
+QWidget* LayoutDialog::createUI(Settings* controlCenter,
+                                KeyboardPane* kbPane,
                                 QListWidget* activeLayoutsListWidget) {
     readConfig();
 
@@ -56,6 +57,10 @@ QWidget* LayoutDialog::createUI(KeyboardPane* kbPane,
     short width = 350, height = 300;
     this->setGeometry(250, 250, width, height);
 
+    QPushButton* backPushButton = new QPushButton("Close");
+    backPushButton->setIcon(QIcon::fromTheme("go-previous"));
+    this->layout()->addWidget(backPushButton);
+
     QListWidget* availableLayoutList = new QListWidget;
     availableLayoutList->setStyleSheet("QListView::item:selected { background-color: " + \
                                        layoutDialogConfig["accent"].toString() + \
@@ -77,6 +82,11 @@ QWidget* LayoutDialog::createUI(KeyboardPane* kbPane,
                                   activeLayoutsListWidget);
             }
         }
+    });
+
+    this->connect(backPushButton, &QPushButton::clicked, this, [this, controlCenter]() {
+        controlCenter->mLayoutDgVisible = false;
+        delete this;
     });
 
     return this;

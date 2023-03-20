@@ -2,6 +2,7 @@
 #define DATETIME_H
 
 #include "../../pane.h"
+#include "../../settings.h"
 
 class DatetimeAppletPane {
 public:
@@ -10,7 +11,7 @@ public:
                             QLineEdit* dateFormatLineEdit);
     void saveSettings(QLineEdit* timeFormatLineEdit,
                       QLineEdit* dateFormatLineEdit);
-    QWidget* createUI();
+    QWidget* createUI(Settings* controlCenter);
 };
 
 #endif // DATETIME_H

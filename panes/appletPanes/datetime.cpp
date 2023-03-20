@@ -37,7 +37,7 @@ void DatetimeAppletPane::saveSettings(QLineEdit* timeFormatLineEdit,
     Pane::saveConfig(datetimeAppletPaneConfig);
 }
 
-QWidget* DatetimeAppletPane::createUI() {
+QWidget* DatetimeAppletPane::createUI(Settings* controlCenter) {
     readConfig();
 
     // UI
@@ -62,6 +62,10 @@ QWidget* DatetimeAppletPane::createUI() {
 
     short width = 400, height = 500;
     datetimeAppletPane->setGeometry(650, 250, width, height);
+
+    QPushButton* backPushButton = new QPushButton("Close");
+    backPushButton->setIcon(QIcon::fromTheme("go-previous"));
+    datetimeAppletPane->layout()->addWidget(backPushButton);
 
     QLabel* timeFormatLabel = new QLabel("Time format");
     datetimeAppletPane->layout()->addWidget(timeFormatLabel);
@@ -113,6 +117,13 @@ QWidget* DatetimeAppletPane::createUI() {
     datetimeAppletPane->connect(savePushButton, &QPushButton::clicked, datetimeAppletPane,
                                 [this, timeFormatLineEdit, dateFormatLineEdit]() {
         saveSettings(timeFormatLineEdit, dateFormatLineEdit);
+    });
+
+    datetimeAppletPane->connect(backPushButton, &QPushButton::clicked, datetimeAppletPane,
+                                [this, datetimeAppletPane, controlCenter]() {
+        controlCenter->mDateTimeWidgetVisible = false;
+        delete datetimeAppletPane;
+        delete this;
     });
 
 

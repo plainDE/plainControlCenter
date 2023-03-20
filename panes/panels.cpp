@@ -243,6 +243,18 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
     this->connect(ui->backPushButton, &QPushButton::clicked, this,
                   [this, controlCenter]() {
         controlCenter->mPanelsWidgetVisible = false;
+        /*if (mAppMenuAppletPane != NULL) {
+            delete mAppMenuAppletPane;
+            controlCenter->mAppMenuWidgetVisible = false;
+        }
+        if (mDatetimeAppletPane != NULL) {
+            delete mDatetimeAppletPane;
+            controlCenter->mDateTimeWidgetVisible = false;
+        }
+        if (mLocalIPv4AppletPane != NULL) {
+            delete mLocalIPv4AppletPane;
+            controlCenter->mLocalIPv4WidgetVisible = false;
+        }*/
         this->hide();
         delete this;
     });
@@ -439,23 +451,30 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
     });
 
     this->connect(ui->configureAppletPushButton, &QPushButton::clicked, this,
-                  [this]() {
+                  [this, controlCenter]() {
         if (!ui->enabledAppletsListWidget->selectedItems().isEmpty()) {
             QString applet = ui->enabledAppletsListWidget->selectedItems().at(0)->text();
             if (applet == "appmenu") {
-                AppMenuAppletPane* appMenuAppletPane = new AppMenuAppletPane;
-                QWidget* appMenuAppletWidget = appMenuAppletPane->createUI();
-                appMenuAppletWidget->show();
+                if (!controlCenter->mAppMenuWidgetVisible) {
+                    controlCenter->mAppMenuWidgetVisible = true;
+                    mAppMenuAppletPane = new AppMenuAppletPane;
+                    QWidget* appMenuAppletWidget = mAppMenuAppletPane->createUI(controlCenter);
+                    controlCenter->layout()->addWidget(appMenuAppletWidget);
+                }
             }
             else if (applet == "datetime") {
-                DatetimeAppletPane* datetimeAppletPane = new DatetimeAppletPane;
-                QWidget* datetimeAppletWidget = datetimeAppletPane->createUI();
-                datetimeAppletWidget->show();
+                if (!controlCenter->mDateTimeWidgetVisible) {
+                    mDatetimeAppletPane = new DatetimeAppletPane;
+                    QWidget* datetimeAppletWidget = mDatetimeAppletPane->createUI(controlCenter);
+                    controlCenter->layout()->addWidget(datetimeAppletWidget);
+                }
             }
             else if (applet == "localipv4") {
-                LocalIPv4AppletPane* localIPv4AppletPane = new LocalIPv4AppletPane;
-                QWidget* localIPv4AppletWidget = localIPv4AppletPane->createUI();
-                localIPv4AppletWidget->show();
+                if (!controlCenter->mLocalIPv4WidgetVisible) {
+                    mLocalIPv4AppletPane = new LocalIPv4AppletPane;
+                    QWidget* localIPv4AppletWidget = mLocalIPv4AppletPane->createUI(controlCenter);
+                    controlCenter->layout()->addWidget(localIPv4AppletWidget);
+                }
             }
             else {
                 QMessageBox msg;

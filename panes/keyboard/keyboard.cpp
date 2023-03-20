@@ -171,7 +171,7 @@ QWidget* KeyboardPane::createUI(Settings* controlCenter) {
 
 
     LayoutDialog* layoutDg = new LayoutDialog;
-    QWidget* layoutDgWidget = layoutDg->createUI(this, activeLayoutsListWidget);
+    QWidget* layoutDgWidget = layoutDg->createUI(controlCenter, this, activeLayoutsListWidget);
 
 
     // Make connections
@@ -192,9 +192,11 @@ QWidget* KeyboardPane::createUI(Settings* controlCenter) {
     keyboardPane->connect(backPushButton, &QPushButton::clicked, keyboardPane,
                   [keyboardPane, layoutDg, controlCenter]() {
         controlCenter->mKeyboardWidgetVisible = false;
-        controlCenter->mLayoutDgVisible = false;
         keyboardPane->hide();
-        delete layoutDg;
+        if (layoutDg != NULL) {
+            delete layoutDg;
+            controlCenter->mLayoutDgVisible = false;
+        }
         delete keyboardPane;
     });
 

@@ -2,8 +2,9 @@
 #define APPMENU_H
 
 #include "../../pane.h"
+#include "../../settings.h"
 
-struct App {
+struct Application {
     QString displayedName;
     QIcon icon;
     bool display;
@@ -18,7 +19,7 @@ enum LineEditType {
 class AppMenuAppletPane {
 public:
     void readConfig();
-    QWidget* createUI();
+    QWidget* createUI(Settings* controlCenter);
     void prepareUI(QListWidget* allAppsListWidget,
                    QListWidget* favAppsListWidget);
     void setCurrentSettings(QLineEdit* buttonTextLineEdit,
