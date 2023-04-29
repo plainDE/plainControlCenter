@@ -45,7 +45,6 @@ App readDesktopFile(QString pathToCurrentDesktopFile) {
 
 void AutostartPane::prepareUI(QListWidget* autostartEntriesListWidget,
                               QListWidget* allAppsListWidget) {
-    // TODO: ~/.local/share/applications
     QDir appDir("/usr/share/applications");
     QStringList desktopFilesList = appDir.entryList();
 
@@ -53,9 +52,6 @@ void AutostartPane::prepareUI(QListWidget* autostartEntriesListWidget,
 
     QString pathToCurrentDesktopFile;
     App currentApp;
-
-    desktopFilesList.removeFirst();
-    desktopFilesList.removeFirst();
 
     allAppsListWidget->clear();
     autostartEntriesListWidget->clear();
@@ -75,6 +71,30 @@ void AutostartPane::prepareUI(QListWidget* autostartEntriesListWidget,
                 favItem->setIcon(currentApp.icon);
                 autostartEntriesListWidget->addItem(favItem);
                 entryByItem[favItem] = desktopFilesList[i];
+            }
+        }
+    }
+
+    QString homeDir = getenv("HOME");
+    if (QDir(homeDir + "/.local/share/applications").exists()) {
+        appDir.cd(homeDir + "/.local/share/applications");
+        desktopFilesList = appDir.entryList();
+
+        for (int i = 0; i < desktopFilesList.length(); ++i) {
+            pathToCurrentDesktopFile = appDir.absoluteFilePath(desktopFilesList[i]);
+            currentApp = readDesktopFile(pathToCurrentDesktopFile);
+            if (currentApp.displayedName != "") {
+                QListWidgetItem* item = new QListWidgetItem(currentApp.displayedName);
+                item->setIcon(currentApp.icon);
+                allAppsListWidget->addItem(item);
+                entryByItem[item] = desktopFilesList[i];
+
+                if (autostartEntries.contains(desktopFilesList[i])) {
+                    QListWidgetItem* favItem = new QListWidgetItem(currentApp.displayedName);
+                    favItem->setIcon(currentApp.icon);
+                    autostartEntriesListWidget->addItem(favItem);
+                    entryByItem[favItem] = desktopFilesList[i];
+                }
             }
         }
     }

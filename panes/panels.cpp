@@ -352,12 +352,24 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
                     QString filename = QInputDialog::getText(this,
                                                              "Select app",
                                                              "Type one of filenames from "
-                                                             "/usr/share/applications/ (i.e., app.desktop)",
+                                                             "/usr/share/applications/ or "
+                                                             "~/.local/share/applications "
+                                                             "(i.e., app.desktop)",
                                                              QLineEdit::Normal,
                                                              "",
                                                              &ok);
+
+
                     if (ok && !filename.isEmpty()) {
-                        QString desktopEntryPath = "/usr/share/applications/" + filename;
+                        QString desktopEntryPath;
+                        if (QFile::exists("/usr/share/applications" + filename)) {
+                            desktopEntryPath = "/usr/share/applications/" + filename;
+                        }
+                        else {
+                            QString homeDir = getenv("HOME");
+                            desktopEntryPath = homeDir + "/.local/share/applications/" + filename;
+                        }
+
                         QString iconPath;
 
                         QListWidgetItem* addedItem = new QListWidgetItem;

@@ -193,7 +193,7 @@ QWidget* KeyboardPane::createUI(Settings* controlCenter) {
                   [keyboardPane, layoutDg, controlCenter]() {
         controlCenter->mKeyboardWidgetVisible = false;
         keyboardPane->hide();
-        if (layoutDg != NULL) {
+        if (controlCenter->mLayoutDgVisible) {
             delete layoutDg;
             controlCenter->mLayoutDgVisible = false;
         }
