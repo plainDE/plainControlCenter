@@ -362,7 +362,7 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
 
                     if (ok && !filename.isEmpty()) {
                         QString desktopEntryPath;
-                        if (QFile::exists("/usr/share/applications" + filename)) {
+                        if (QFile::exists("/usr/share/applications/" + filename)) {
                             desktopEntryPath = "/usr/share/applications/" + filename;
                         }
                         else {
