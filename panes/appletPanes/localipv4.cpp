@@ -88,6 +88,7 @@ QWidget* LocalIPv4AppletPane::createUI(Settings* controlCenter) {
     layout->addWidget(savePushButton);
 
     prepareUI(ifaceList);
+    setCurrentSettings(ifaceList);
 
     // Make connections
     localIPv4AppletPane->connect(revertPushButton, &QPushButton::clicked, localIPv4AppletPane,

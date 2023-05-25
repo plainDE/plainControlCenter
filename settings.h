@@ -21,6 +21,8 @@ public:
     bool mAppMenuWidgetVisible = false;
     bool mDateTimeWidgetVisible = false;
     bool mLocalIPv4WidgetVisible = false;
+    bool mWinListWidgetVisible = false;
+    bool mUserMenuWidgetVisible = false;
 };
 
 #endif // SETTINGS_H

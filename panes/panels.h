@@ -7,6 +7,8 @@
 #include "appletPanes/appmenu.h"
 #include "appletPanes/datetime.h"
 #include "appletPanes/localipv4.h"
+#include "appletPanes/winlist.h"
+#include "appletPanes/usermenu.h"
 
 namespace Ui {
 class PanelsPane;
@@ -25,6 +27,8 @@ public:
     AppMenuAppletPane* mAppMenuAppletPane;
     DatetimeAppletPane* mDatetimeAppletPane;
     LocalIPv4AppletPane* mLocalIPv4AppletPane;
+    WinListAppletPane* mWinListAppletPane;
+    UserMenuAppletPane* mUserMenuAppletPane;
 
 
 private:

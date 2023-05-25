@@ -279,11 +279,16 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
                 panelObject["location"] = QJsonValue("top");
             }
             else {
-                QString existingVisibleName = ui->panelsListWidget->item(ui->panelsListWidget->count() - 1)->text();
-                qint8 existingPanelNumber = existingVisibleName.midRef(6, 6).toInt();
-                newPanelNumber = existingPanelNumber + 1;
+                newPanelNumber = 1;
                 panelName = "panel" + QString::number(newPanelNumber);
                 visibleName = "Panel " + QString::number(newPanelNumber);
+
+                while (!ui->panelsListWidget->findItems(visibleName,
+                                                        Qt::MatchExactly).isEmpty()) {
+                    ++newPanelNumber;
+                    panelName = "panel" + QString::number(newPanelNumber);
+                    visibleName = "Panel " + QString::number(newPanelNumber);
+                }
 
                 QStringList busyLocations;
                 for (int i = 0; i < ui->panelsListWidget->count(); ++i) {
@@ -331,6 +336,9 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
 
                 setCurrentSettings(ui->panelsListWidget->count());
                 ui->panelsListWidget->setCurrentRow(ui->panelsListWidget->count() - 1);
+                QString panelName = ui->panelsListWidget->selectedItems()[0]->text();
+                qint8 panelNumber = panelName.midRef(6, 6).toInt();
+                setCurrentSettings(panelNumber);
             }
         }
         else {
@@ -351,48 +359,71 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
                     bool ok;
                     QString filename = QInputDialog::getText(this,
                                                              "Select app",
-                                                             "Type one of filenames from "
-                                                             "/usr/share/applications/ or "
-                                                             "~/.local/share/applications "
-                                                             "(i.e., app.desktop)",
+                                                             "Type one of filenames from \n"
+                                                             "/usr/share/applications/ or \n"
+                                                             "~/.local/share/applications \n"
+                                                             "(e.g. app.desktop)\n"
+                                                             "OR\n"
+                                                             "specify your script and icon\n"
+                                                             "(e.g. /path/to/script:/path/to/icon)",
                                                              QLineEdit::Normal,
                                                              "",
                                                              &ok);
 
 
                     if (ok && !filename.isEmpty()) {
-                        QString desktopEntryPath;
-                        if (QFile::exists("/usr/share/applications/" + filename)) {
-                            desktopEntryPath = "/usr/share/applications/" + filename;
-                        }
-                        else {
-                            QString homeDir = getenv("HOME");
-                            desktopEntryPath = homeDir + "/.local/share/applications/" + filename;
-                        }
-
-                        QString iconPath;
-
                         QListWidgetItem* addedItem = new QListWidgetItem;
-                        addedItem->setText("launcher:" + filename);
-
-                        QSettings desktopFileReader(desktopEntryPath, QSettings::IniFormat);
-                        desktopFileReader.sync();
-                        desktopFileReader.beginGroup("Desktop Entry");
-                            iconPath = desktopFileReader.value("Icon").toString();
-                        desktopFileReader.endGroup();
-
-                        if (QIcon::hasThemeIcon(iconPath)) {
-                            addedItem->setIcon(QIcon::fromTheme(iconPath));
-                        }
-                        else {
-                            if (QFile::exists(iconPath)) {
-                                addedItem->setIcon(QIcon(iconPath));
+                        if (filename.endsWith(".desktop")) {
+                            QString desktopEntryPath;
+                            if (QFile::exists("/usr/share/applications/" + filename)) {
+                                desktopEntryPath = "/usr/share/applications/" + filename;
                             }
                             else {
-                                addedItem->setIcon(QIcon::fromTheme("terminal"));
+                                QString homeDir = getenv("HOME");
+                                desktopEntryPath = homeDir + "/.local/share/applications/" + filename;
+                            }
+
+                            QString iconPath;
+                            addedItem->setText("launcher:" + filename);
+
+                            QSettings desktopFileReader(desktopEntryPath, QSettings::IniFormat);
+                            desktopFileReader.sync();
+                            desktopFileReader.beginGroup("Desktop Entry");
+                            iconPath = desktopFileReader.value("Icon").toString();
+                            desktopFileReader.endGroup();
+
+                            if (QIcon::hasThemeIcon(iconPath)) {
+                                addedItem->setIcon(QIcon::fromTheme(iconPath));
+                            }
+                            else {
+                                if (QFile::exists(iconPath)) {
+                                    addedItem->setIcon(QIcon(iconPath));
+                                }
+                                else {
+                                    addedItem->setIcon(QIcon::fromTheme("terminal"));
+                                }
+                            }
+
+
+                        }
+                        else {
+                            QStringList launcherData = filename.split(':');
+                            QString exec = launcherData[0];
+                            QString icon;
+                            if (launcherData.count() > 1) {
+                                icon = launcherData[1];
+                            }
+                            else {
+                                icon = "dialog-question";
+                            }
+                            addedItem->setText("launcher:" + exec + ":" + icon);
+                            if (QFile::exists(icon)) {
+                                addedItem->setIcon(QIcon(icon));
+                            }
+                            else {
+                                addedItem->setIcon(QIcon::fromTheme(icon));
                             }
                         }
-
                         ui->enabledAppletsListWidget->addItem(addedItem);
                     }
                 }
@@ -476,6 +507,7 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
             }
             else if (applet == "datetime") {
                 if (!controlCenter->mDateTimeWidgetVisible) {
+                    controlCenter->mDateTimeWidgetVisible = true;
                     mDatetimeAppletPane = new DatetimeAppletPane;
                     QWidget* datetimeAppletWidget = mDatetimeAppletPane->createUI(controlCenter);
                     controlCenter->layout()->addWidget(datetimeAppletWidget);
@@ -483,9 +515,26 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
             }
             else if (applet == "localipv4") {
                 if (!controlCenter->mLocalIPv4WidgetVisible) {
+                    controlCenter->mLocalIPv4WidgetVisible = true;
                     mLocalIPv4AppletPane = new LocalIPv4AppletPane;
                     QWidget* localIPv4AppletWidget = mLocalIPv4AppletPane->createUI(controlCenter);
                     controlCenter->layout()->addWidget(localIPv4AppletWidget);
+                }
+            }
+            else if (applet == "windowlist") {
+                if (!controlCenter->mWinListWidgetVisible) {
+                    controlCenter->mWinListWidgetVisible = true;
+                    mWinListAppletPane = new WinListAppletPane;
+                    QWidget* winListAppletWidget = mWinListAppletPane->createUI(controlCenter);
+                    controlCenter->layout()->addWidget(winListAppletWidget);
+                }
+            }
+            else if (applet == "usermenu") {
+                if (!controlCenter->mUserMenuWidgetVisible) {
+                    controlCenter->mUserMenuWidgetVisible = true;
+                    mUserMenuAppletPane = new UserMenuAppletPane;
+                    QWidget* userMenuAppletWidget = mUserMenuAppletPane->createUI(controlCenter);
+                    controlCenter->layout()->addWidget(userMenuAppletWidget);
                 }
             }
             else {

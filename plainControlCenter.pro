@@ -17,6 +17,8 @@ SOURCES += \
     panes/appletPanes/appmenu.cpp \
     panes/appletPanes/datetime.cpp \
     panes/appletPanes/localipv4.cpp \
+    panes/appletPanes/usermenu.cpp \
+    panes/appletPanes/winlist.cpp \
     panes/autostart.cpp \
     panes/keyboard/keyboard.cpp \
     panes/keyboard/layoutdialog.cpp \
@@ -29,6 +31,8 @@ HEADERS += \
     panes/appletPanes/appmenu.h \
     panes/appletPanes/datetime.h \
     panes/appletPanes/localipv4.h \
+    panes/appletPanes/usermenu.h \
+    panes/appletPanes/winlist.h \
     panes/autostart.h \
     panes/keyboard/keyboard.h \
     panes/keyboard/layoutdialog.h \
