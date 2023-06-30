@@ -198,10 +198,11 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
     iconByApplet["launcher"] = "terminal";
     iconByApplet["battery"] = "extensions";
     iconByApplet["sni"] = "extensions";
+    iconByApplet["clioutput"] = "terminal";
 
     // Applet human-readable names
     nameByApplet["appmenu"] = "App Menu";
-    nameByApplet["windowlis"] = "Window List";
+    nameByApplet["windowlist"] = "Window List";
     nameByApplet["spacer"] = "Spacer";
     nameByApplet["workspaces"] = "Workspaces Indicator";
     nameByApplet["volume"] = "Volume Dial";
@@ -214,6 +215,7 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
     nameByApplet["launcher"] = "Launcher";
     nameByApplet["battery"] = "Battery Indicator";
     nameByApplet["sni"] = "SNI tray";
+    nameByApplet["clioutput"] = "CLI Output";
 
 
     for (qint8 i = 0; i < ui->availableAppletsListWidget->count(); ++i) {
@@ -355,7 +357,7 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
                   [this]() {
         foreach (QListWidgetItem* item, ui->availableAppletsListWidget->selectedItems()) {
             if (ui->enabledAppletsListWidget->findItems(item->text(), Qt::MatchExactly).isEmpty()) {
-                if (item->text().startsWith("launcher")) {
+                if (!item->text().compare("launcher")) {
                     bool ok;
                     QString filename = QInputDialog::getText(this,
                                                              "Select app",
@@ -427,6 +429,25 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
                         ui->enabledAppletsListWidget->addItem(addedItem);
                     }
                 }
+
+                else if (!item->text().compare("clioutput")) {
+                    bool ok;
+                    QString filename = QInputDialog::getText(this,
+                                                             "Select config",
+                                                             "Type one of filenames from \n"
+                                                             "~/.config/plainDE/clioutput-applets/",
+                                                             QLineEdit::Normal,
+                                                             "",
+                                                             &ok);
+                    if (filename.endsWith(".json")) {
+                        filename.chop(5);
+                    }
+                    QListWidgetItem* addedItem = new QListWidgetItem;
+                    addedItem->setText("clioutput:" + filename);
+                    addedItem->setIcon(QIcon::fromTheme("terminal"));
+                    ui->enabledAppletsListWidget->addItem(addedItem);
+                }
+
                 else {
                     QListWidgetItem* addedItem = new QListWidgetItem;
                     addedItem->setText(item->text());

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>520</height>
+    <height>537</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -176,6 +176,11 @@
        <item>
         <property name="text">
          <string>sni</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>clioutput</string>
         </property>
        </item>
       </widget>
