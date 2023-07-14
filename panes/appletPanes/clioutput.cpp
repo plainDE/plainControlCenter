@@ -399,7 +399,7 @@ void CLIOutputAppletPane::createUI(Settings* controlCenter) {
         QJsonDocument appletDoc(appletConfig);
         QDir dir(QString("%1/.config/plainDE/clioutput-applets").arg(QDir::homePath()));
         if (!dir.exists()) {
-            dir.mkdir("");
+            dir.mkdir(QString("%1/.config/plainDE/clioutput-applets").arg(QDir::homePath()));
         }
         QFile appletFile(QString("%1/%2.json").arg(dir.absolutePath(), nameLineEdit->text()));
         appletFile.open(QFile::WriteOnly);
