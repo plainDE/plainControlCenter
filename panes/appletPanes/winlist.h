@@ -19,8 +19,8 @@
 class WinListAppletPane {
 public:
     void readConfig();
-    void setCurrentSettings(QSpinBox* sizeSpinBox);
-    void saveSettings(QSpinBox* sizeSpinBox);
+    void setCurrentSettings(QSpinBox* sizeSpinBox, QCheckBox* showTitlesCheckBox);
+    void saveSettings(QSpinBox* sizeSpinBox, QCheckBox* showTitlesCheckBox);
     QWidget* createUI(Settings* controlCenter);
 };
 

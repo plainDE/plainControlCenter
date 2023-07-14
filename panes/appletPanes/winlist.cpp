@@ -14,13 +14,23 @@ void WinListAppletPane::readConfig() {
     winListAppletPaneConfig = QJsonDocument::fromJson(data.toUtf8()).object();
 }
 
-void WinListAppletPane::setCurrentSettings(QSpinBox* sizeSpinBox) {
+void WinListAppletPane::setCurrentSettings(QSpinBox* sizeSpinBox,
+                                           QCheckBox* showTitlesCheckBox) {
     int size = winListAppletPaneConfig["winListIconSize"].toInt();
     sizeSpinBox->setValue(size);
+
+    showTitlesCheckBox->setChecked(
+        winListAppletPaneConfig["winListShowTitles"].toBool()
+    );
 }
 
-void WinListAppletPane::saveSettings(QSpinBox* sizeSpinBox) {
-    winListAppletPaneConfig["winListIconSize"] = QJsonValue(sizeSpinBox->value());
+void WinListAppletPane::saveSettings(QSpinBox* sizeSpinBox,
+                                     QCheckBox* showTitlesCheckBox) {
+    winListAppletPaneConfig["winListIconSize"] =
+        QJsonValue(sizeSpinBox->value());
+    winListAppletPaneConfig["winListShowTitles"] =
+        QJsonValue(showTitlesCheckBox->isChecked());
+
     Pane::saveConfig(winListAppletPaneConfig);
 }
 
@@ -60,6 +70,9 @@ QWidget* WinListAppletPane::createUI(Settings* controlCenter) {
     QSpinBox* sizeSpinBox = new QSpinBox();
     layout->addWidget(sizeSpinBox);
 
+    QCheckBox* showTitlesCheckBox = new QCheckBox("Show window titles");
+    layout->addWidget(showTitlesCheckBox);
+
     layout->addItem(new QSpacerItem(0,
                                     0,
                                     QSizePolicy::Ignored,
@@ -71,17 +84,19 @@ QWidget* WinListAppletPane::createUI(Settings* controlCenter) {
     QPushButton* savePushButton = new QPushButton("Save");
     layout->addWidget(savePushButton);
 
-    setCurrentSettings(sizeSpinBox);
+    setCurrentSettings(sizeSpinBox, showTitlesCheckBox);
 
     // Make connections
     winListAppletPane->connect(revertPushButton, &QPushButton::clicked, winListAppletPane,
-                                 [this, sizeSpinBox]() {
-                                     setCurrentSettings(sizeSpinBox);
+                                 [this, sizeSpinBox, showTitlesCheckBox]() {
+                                     setCurrentSettings(sizeSpinBox,
+                                                        showTitlesCheckBox);
                                  });
 
     winListAppletPane->connect(savePushButton, &QPushButton::clicked, winListAppletPane,
-                                 [this, sizeSpinBox]() {
-                                     saveSettings(sizeSpinBox);
+                                 [this, sizeSpinBox, showTitlesCheckBox]() {
+                                     saveSettings(sizeSpinBox,
+                                                  showTitlesCheckBox);
                                  });
     winListAppletPane->connect(backPushButton, &QPushButton::clicked, winListAppletPane,
                                  [this, winListAppletPane, controlCenter]() {

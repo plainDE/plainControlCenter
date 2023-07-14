@@ -16,13 +16,16 @@ void DatetimeAppletPane::readConfig() {
 }
 
 void DatetimeAppletPane::setCurrentSettings(QLineEdit* timeFormatLineEdit,
-                                            QLineEdit* dateFormatLineEdit) {
+                                            QLineEdit* dateFormatLineEdit,
+                                            QCheckBox* showWeekNumbersCheckBox) {
     timeFormatLineEdit->setText(datetimeAppletPaneConfig["timeFormat"].toString());
     dateFormatLineEdit->setText(datetimeAppletPaneConfig["dateFormat"].toString());
+    showWeekNumbersCheckBox->setChecked(datetimeAppletPaneConfig["showWeekNumbers"].toBool());
 }
 
 void DatetimeAppletPane::saveSettings(QLineEdit* timeFormatLineEdit,
-                                      QLineEdit* dateFormatLineEdit) {
+                                      QLineEdit* dateFormatLineEdit,
+                                      QCheckBox* showWeekNumbersCheckBox) {
     datetimeAppletPaneConfig["timeFormat"] = QJsonValue(timeFormatLineEdit->text());
 
     if (!dateFormatLineEdit->text().isEmpty()) {
@@ -33,6 +36,8 @@ void DatetimeAppletPane::saveSettings(QLineEdit* timeFormatLineEdit,
         datetimeAppletPaneConfig["showDate"] = QJsonValue(false);
         datetimeAppletPaneConfig["dateFormat"] = QJsonValue("");
     }
+
+    datetimeAppletPaneConfig["showWeekNumbers"] = showWeekNumbersCheckBox->isChecked();
 
     Pane::saveConfig(datetimeAppletPaneConfig);
 }
@@ -99,24 +104,27 @@ QWidget* DatetimeAppletPane::createUI(Settings* controlCenter) {
                                               "yyyy - 1970-9999");
     datetimeAppletPane->layout()->addWidget(dateDescriptionLabel);
 
+    QCheckBox* showWeekNumbersCheckBox = new QCheckBox("Show week numbers");
+    datetimeAppletPane->layout()->addWidget(showWeekNumbersCheckBox);
+
     QPushButton* revertPushButton = new QPushButton("Revert");
     datetimeAppletPane->layout()->addWidget(revertPushButton);
 
     QPushButton* savePushButton = new QPushButton("Save");
     datetimeAppletPane->layout()->addWidget(savePushButton);
 
-    setCurrentSettings(timeFormatLineEdit, dateFormatLineEdit);
+    setCurrentSettings(timeFormatLineEdit, dateFormatLineEdit, showWeekNumbersCheckBox);
 
 
     // Make connections
     datetimeAppletPane->connect(revertPushButton, &QPushButton::clicked, datetimeAppletPane,
-                                [this, timeFormatLineEdit, dateFormatLineEdit]() {
-        setCurrentSettings(timeFormatLineEdit, dateFormatLineEdit);
+                                [this, timeFormatLineEdit, dateFormatLineEdit, showWeekNumbersCheckBox]() {
+        setCurrentSettings(timeFormatLineEdit, dateFormatLineEdit, showWeekNumbersCheckBox);
     });
 
     datetimeAppletPane->connect(savePushButton, &QPushButton::clicked, datetimeAppletPane,
-                                [this, timeFormatLineEdit, dateFormatLineEdit]() {
-        saveSettings(timeFormatLineEdit, dateFormatLineEdit);
+                                [this, timeFormatLineEdit, dateFormatLineEdit, showWeekNumbersCheckBox]() {
+        saveSettings(timeFormatLineEdit, dateFormatLineEdit, showWeekNumbersCheckBox);
     });
 
     datetimeAppletPane->connect(backPushButton, &QPushButton::clicked, datetimeAppletPane,

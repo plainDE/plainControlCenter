@@ -23,6 +23,7 @@ public:
     bool mLocalIPv4WidgetVisible = false;
     bool mWinListWidgetVisible = false;
     bool mUserMenuWidgetVisible = false;
+    bool mCLIOutputWidgetVisible = false;
 };
 
 #endif // SETTINGS_H

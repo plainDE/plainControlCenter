@@ -9,6 +9,7 @@
 #include "appletPanes/localipv4.h"
 #include "appletPanes/winlist.h"
 #include "appletPanes/usermenu.h"
+#include "appletPanes/clioutput.h"
 
 namespace Ui {
 class PanelsPane;
@@ -29,6 +30,7 @@ public:
     LocalIPv4AppletPane* mLocalIPv4AppletPane;
     WinListAppletPane* mWinListAppletPane;
     UserMenuAppletPane* mUserMenuAppletPane;
+
 
 
 private:

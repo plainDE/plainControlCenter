@@ -143,6 +143,12 @@ QWidget* AppearancePane::createUI(Settings* controlCenter) {
     layout->setContentsMargins(4, 4, 4, 4);
     appearancePane->setLayout(layout);
 
+    // Font
+    /*QFont paneFont;
+    paneFont.setFamily(appearancePaneConfig["fontFamily"].toString());
+    paneFont.setPointSize(appearancePaneConfig["fontSize"].toInt());
+    appearancePane->setFont(paneFont);*/
+
     // Appearance
     updateStyle(appearancePane);
 

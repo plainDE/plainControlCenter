@@ -8,9 +8,11 @@ class DatetimeAppletPane {
 public:
     void readConfig();
     void setCurrentSettings(QLineEdit* timeFormatLineEdit,
-                            QLineEdit* dateFormatLineEdit);
+                            QLineEdit* dateFormatLineEdit,
+                            QCheckBox* showWeekNumbersCheckBox);
     void saveSettings(QLineEdit* timeFormatLineEdit,
-                      QLineEdit* dateFormatLineEdit);
+                      QLineEdit* dateFormatLineEdit,
+                      QCheckBox* showWeekNumbersCheckBox);
     QWidget* createUI(Settings* controlCenter);
 };
 

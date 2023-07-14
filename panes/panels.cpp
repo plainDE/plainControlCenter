@@ -1,12 +1,6 @@
 #include "panels.h"
 #include "ui_panels.h"
 
-#include "pane.h"
-#include "settings.h"
-#include "appletPanes/appmenu.h"
-#include "appletPanes/datetime.h"
-#include "appletPanes/localipv4.h"
-
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
@@ -354,7 +348,7 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
     });
 
     this->connect(ui->addAppletPushButton, &QPushButton::clicked, this,
-                  [this]() {
+                  [this, controlCenter]() {
         foreach (QListWidgetItem* item, ui->availableAppletsListWidget->selectedItems()) {
             if (ui->enabledAppletsListWidget->findItems(item->text(), Qt::MatchExactly).isEmpty()) {
                 if (!item->text().compare("launcher")) {
@@ -431,21 +425,10 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
                 }
 
                 else if (!item->text().compare("clioutput")) {
-                    bool ok;
-                    QString filename = QInputDialog::getText(this,
-                                                             "Select config",
-                                                             "Type one of filenames from \n"
-                                                             "~/.config/plainDE/clioutput-applets/",
-                                                             QLineEdit::Normal,
-                                                             "",
-                                                             &ok);
-                    if (filename.endsWith(".json")) {
-                        filename.chop(5);
-                    }
-                    QListWidgetItem* addedItem = new QListWidgetItem;
-                    addedItem->setText("clioutput:" + filename);
-                    addedItem->setIcon(QIcon::fromTheme("terminal"));
-                    ui->enabledAppletsListWidget->addItem(addedItem);
+                    controlCenter->mCLIOutputWidgetVisible = true;
+                    auto cliOutputAppletPane = new CLIOutputAppletPane(ui->enabledAppletsListWidget);
+                    cliOutputAppletPane->createUI(controlCenter);
+                    controlCenter->layout()->addWidget(cliOutputAppletPane->mCLIOutputAppletPaneWidget);
                 }
 
                 else {

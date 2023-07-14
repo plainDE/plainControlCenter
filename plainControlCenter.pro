@@ -15,6 +15,7 @@ SOURCES += \
     pane.cpp \
     panes/appearance.cpp \
     panes/appletPanes/appmenu.cpp \
+    panes/appletPanes/clioutput.cpp \
     panes/appletPanes/datetime.cpp \
     panes/appletPanes/localipv4.cpp \
     panes/appletPanes/usermenu.cpp \
@@ -29,6 +30,7 @@ HEADERS += \
     pane.h \
     panes/appearance.h \
     panes/appletPanes/appmenu.h \
+    panes/appletPanes/clioutput.h \
     panes/appletPanes/datetime.h \
     panes/appletPanes/localipv4.h \
     panes/appletPanes/usermenu.h \

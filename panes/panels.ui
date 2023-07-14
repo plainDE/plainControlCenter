@@ -281,8 +281,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset theme="preferences-other">
-           <normaloff>.</normaloff>.</iconset>
+          <iconset theme="preferences-system"/>
          </property>
         </widget>
        </item>
