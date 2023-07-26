@@ -24,6 +24,8 @@ public:
     bool mWinListWidgetVisible = false;
     bool mUserMenuWidgetVisible = false;
     bool mCLIOutputWidgetVisible = false;
+    bool mVolumeWidgetVisible = false;
+    bool mWorkspacesWidgetVisible = false;
 };
 
 #endif // SETTINGS_H

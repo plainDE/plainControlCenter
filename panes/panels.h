@@ -10,6 +10,8 @@
 #include "appletPanes/winlist.h"
 #include "appletPanes/usermenu.h"
 #include "appletPanes/clioutput.h"
+#include "appletPanes/volume.h"
+#include "appletPanes/workspaces.h"
 
 namespace Ui {
 class PanelsPane;
@@ -30,7 +32,8 @@ public:
     LocalIPv4AppletPane* mLocalIPv4AppletPane;
     WinListAppletPane* mWinListAppletPane;
     UserMenuAppletPane* mUserMenuAppletPane;
-
+    VolumeAppletPane* mVolumeAppletPane;
+    WorkspacesAppletPane* mWorkspacesAppletPane;
 
 
 private:

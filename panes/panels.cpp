@@ -541,6 +541,22 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
                     controlCenter->layout()->addWidget(userMenuAppletWidget);
                 }
             }
+            else if (applet == "volume") {
+                if (!controlCenter->mVolumeWidgetVisible) {
+                    controlCenter->mVolumeWidgetVisible = true;
+                    mVolumeAppletPane = new VolumeAppletPane;
+                    QWidget* volumeAppletWidget = mVolumeAppletPane->createUI(controlCenter);
+                    controlCenter->layout()->addWidget(volumeAppletWidget);
+                }
+            }
+            else if (applet == "workspaces") {
+                if (!controlCenter->mWorkspacesWidgetVisible) {
+                    controlCenter->mWorkspacesWidgetVisible = true;
+                    mWorkspacesAppletPane = new WorkspacesAppletPane;
+                    QWidget* workspacesAppletWidget = mWorkspacesAppletPane->createUI(controlCenter);
+                    controlCenter->layout()->addWidget(workspacesAppletWidget);
+                }
+            }
             else {
                 QMessageBox msg;
                 msg.setWindowTitle("Information");
