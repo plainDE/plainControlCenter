@@ -75,6 +75,9 @@ void PanelsPane::setCurrentSettings(qint8 panelNumber) {
     // Panel height
     ui->thicknessSpinBox->setValue(panelsPaneConfig[panelName].toObject()["thickness"].toInt());
 
+    // Screen
+    ui->screenComboBox->setCurrentIndex(ui->screenComboBox->findText(panelsPaneConfig[panelName].toObject()["screen"].toString()));
+
     // Panel location
     if (panelsPaneConfig[panelName].toObject()["location"].toString() == "top") {
         ui->topRadioButton->setChecked(true);
@@ -94,6 +97,9 @@ void PanelsPane::setCurrentSettings(qint8 panelNumber) {
 
     // Spacing between applets
     ui->spacingSpinBox->setValue(panelsPaneConfig[panelName].toObject()["spacing"].toInt());
+
+    // Margin
+    ui->marginSpinBox->setValue(panelsPaneConfig[panelName].toObject()["margin"].toInt());
 }
 
 void PanelsPane::saveSettings(qint8 panelNumber) {
@@ -120,6 +126,9 @@ void PanelsPane::saveSettings(qint8 panelNumber) {
     // Panel height
     panelObject["thickness"] = QJsonValue(ui->thicknessSpinBox->value());
 
+    // Screen
+    panelObject["screen"] = QJsonValue(ui->screenComboBox->currentText());
+
     // Panel location
     if (ui->topRadioButton->isChecked()) {
         panelObject["location"] = QJsonValue("top");
@@ -139,6 +148,9 @@ void PanelsPane::saveSettings(qint8 panelNumber) {
 
     // Spacing between applets
     panelObject["spacing"] = QJsonValue(ui->spacingSpinBox->value());
+
+    // Margin
+    panelObject["margin"] = QJsonValue(ui->marginSpinBox->value());
 
 
     panelsPaneConfig[panelName] = panelObject;
@@ -177,6 +189,10 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
                                                 panelsPaneConfig["accent"].toString() + \
                                                 "; color: #ffffff };");
 
+    // Screen ComboBox accent
+    ui->screenComboBox->setStyleSheet("QComboBox { selection-background-color: " + \
+                                      panelsPaneConfig["accent"].toString() + "; }");
+
     // Applet icons
     iconByApplet["appmenu"] = "app-launcher";
     iconByApplet["windowlist"] = "kwin";
@@ -211,7 +227,6 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
     nameByApplet["sni"] = "SNI tray";
     nameByApplet["clioutput"] = "CLI Output";
 
-
     for (qint8 i = 0; i < ui->availableAppletsListWidget->count(); ++i) {
         QListWidgetItem* item = ui->availableAppletsListWidget->item(i);
         item->setIcon(QIcon::fromTheme(iconByApplet[item->text()]));
@@ -227,6 +242,13 @@ PanelsPane::PanelsPane(QWidget *parent, Settings* controlCenter) :
 
     // Set max shift
     ui->shiftSpinBox->setMaximum(QGuiApplication::primaryScreen()->geometry().width());
+
+    // Add existing monitors
+    QList<QScreen*> screens = QGuiApplication::screens();
+    foreach (QScreen* screen, screens) {
+        ui->screenComboBox->addItem(screen->name());
+    }
+
 
     // Make connections
     this->connect(ui->panelsListWidget, &QListWidget::itemClicked, this,

@@ -281,7 +281,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset theme="preferences-system"/>
+          <iconset theme="preferences-system">
+           <normaloff>.</normaloff>.</iconset>
          </property>
         </widget>
        </item>
@@ -391,6 +392,16 @@
         <number>0</number>
        </property>
        <item>
+        <widget class="QLabel" name="screenLabel">
+         <property name="text">
+          <string>Screen</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="screenComboBox"/>
+       </item>
+       <item>
         <widget class="QLabel" name="locationLabel">
          <property name="text">
           <string>Panel location</string>
@@ -399,13 +410,6 @@
        </item>
        <item>
         <layout class="QGridLayout" name="gridLayout">
-         <item row="1" column="0">
-          <widget class="QRadioButton" name="bottomRadioButton">
-           <property name="text">
-            <string>Bottom</string>
-           </property>
-          </widget>
-         </item>
          <item row="0" column="0">
           <widget class="QRadioButton" name="topRadioButton">
            <property name="text">
@@ -413,10 +417,10 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
-          <widget class="QRadioButton" name="leftRadioButton">
+         <item row="1" column="0">
+          <widget class="QRadioButton" name="bottomRadioButton">
            <property name="text">
-            <string>Left</string>
+            <string>Bottom</string>
            </property>
           </widget>
          </item>
@@ -424,6 +428,13 @@
           <widget class="QRadioButton" name="rightRadioButton">
            <property name="text">
             <string>Right</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QRadioButton" name="leftRadioButton">
+           <property name="text">
+            <string>Left</string>
            </property>
           </widget>
          </item>
@@ -448,6 +459,20 @@
         <double>1.000000000000000</double>
        </property>
       </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_7">
+     <item>
+      <widget class="QLabel" name="marginLabel">
+       <property name="text">
+        <string>Margin</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="marginSpinBox"/>
      </item>
     </layout>
    </item>
