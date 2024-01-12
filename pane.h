@@ -1,34 +1,44 @@
 #ifndef PANE_H
 #define PANE_H
 
+#include <QWidget>
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonValue>
-#include <QJsonArray>
-#include <QFont>
-#include <QDir>
-#include <QFile>
-#include <QString>
-#include <QSettings>
-#include <QVBoxLayout>
+#include <QIcon>
 #include <QHBoxLayout>
-#include <QSpacerItem>
-#include <QPushButton>
-#include <QFontComboBox>
-#include <QSpinBox>
-#include <QDoubleSpinBox>
-#include <QRadioButton>
-#include <QCheckBox>
-#include <QListWidget>
+#include <QVBoxLayout>
+#include <QFile>
 #include <QLabel>
+#include <QScrollArea>
+#include <QDir>
+#include <QDBusConnection>
+#include <QDBusMessage>
 #include <QMessageBox>
-#include <QColorDialog>
-#include <QLineEdit>
-#include <QScreen>
-#include <QGuiApplication>
 
-namespace Pane {
-    void saveConfig(QJsonObject config);
-}
+class Pane : public QWidget {
+    Q_OBJECT
+public:
+    Pane(QWidget* parent = nullptr,
+         QJsonObject* cfgObj = nullptr,
+         QString paneName = "",
+         QString iconName = "");
+    QJsonValue getConfigValue(QString entry);
+    QJsonValue getConfigValue(QString entry, QString subentry);
+    void setAppearance(QWidget* widget);
+    void setTransparency(QWidget* pane);
+    void setBasicUI(QString paneName, QString iconName);
+    void finalizeUI();
+    void setEntry(QString key, QJsonValue value);
+    void saveConfig();
 
-#endif
+    virtual void setPaneContents();
+
+    QJsonObject* mCfgObj;
+    QWidget* mContentsWidget;
+    QBoxLayout* mLayout;
+    QFont mFont;
+    QFont mTitleFont;
+};
+
+#endif // PANE_H
