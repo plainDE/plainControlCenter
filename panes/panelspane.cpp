@@ -98,6 +98,33 @@ void PanelsPane::setPaneContents() {
     appletsLayout->addLayout(buttonsLayout);
     panelLayout->addLayout(appletsLayout);
 
+    QLabel* autoHideLabel = new QLabel(tr("Auto Hide"));
+    autoHideLabel->setFont(mTitleFont);
+    panelLayout->addWidget(autoHideLabel);
+
+    QVBoxLayout* autoHideLayout = new QVBoxLayout();
+    autoHideLayout->setContentsMargins(10, 1, 1, 1);
+
+    QCheckBox* enableAutoHideCheckBox = new QCheckBox(tr("Enable Auto Hide"));
+    enableAutoHideCheckBox->setFont(mFont);
+    autoHideLayout->addWidget(enableAutoHideCheckBox);
+
+    QHBoxLayout* autoHideIntervalLayout = new QHBoxLayout();
+
+    QLabel* autoHideIntervalLabel = new QLabel(tr("Auto Hide Interval"));
+    autoHideIntervalLabel->setFont(mTitleFont);
+    autoHideIntervalLayout->addWidget(autoHideIntervalLabel);
+
+    QSpinBox* autoHideIntervalSpinBox = new QSpinBox();
+    autoHideIntervalSpinBox->setFont(mFont);
+    autoHideIntervalSpinBox->setMinimum(100);
+    autoHideIntervalSpinBox->setMaximum(32000);
+    autoHideIntervalLayout->addWidget(autoHideIntervalSpinBox);
+
+    autoHideLayout->addLayout(autoHideIntervalLayout);
+
+    panelLayout->addLayout(autoHideLayout);
+
     QLabel* geometryLabel = new QLabel(tr("Geometry"));
     geometryLabel->setFont(mTitleFont);
     panelLayout->addWidget(geometryLabel);
@@ -142,6 +169,10 @@ void PanelsPane::setPaneContents() {
     QCheckBox* stretchCheckBox = new QCheckBox(tr("Stretch to the screen size"));
     stretchCheckBox->setFont(mFont);
     geometryLayout->addWidget(stretchCheckBox);
+
+    QCheckBox* setOnCenterCheckBox = new QCheckBox(tr("Set on the center"));
+    setOnCenterCheckBox->setFont(mFont);
+    geometryLayout->addWidget(setOnCenterCheckBox);
 
     QHBoxLayout* axisShiftLayout = new QHBoxLayout();
 
@@ -277,16 +308,17 @@ void PanelsPane::setPaneContents() {
 
     // Make connections
     connect(panelsListWidget, &QListWidget::itemSelectionChanged,
-            this, [this, panelsListWidget, appletsListWidget, thicknessSpinBox,
-                   screenComboBox, stretchCheckBox, shiftSpinBox, topRadioButton,
-                   bottomRadioButton, leftRadioButton, rightRadioButton,
+            this, [this, panelsListWidget, appletsListWidget, enableAutoHideCheckBox,
+                   autoHideIntervalSpinBox, thicknessSpinBox,
+                   screenComboBox, stretchCheckBox, setOnCenterCheckBox, shiftSpinBox,
+                   topRadioButton, bottomRadioButton, leftRadioButton, rightRadioButton,
                    launcherIconSizeSpinBox, bgrImagePathLineEdit,
                    spacingSpinBox, marginSpinBox, opacitySpinBox]() {
         int id = panelsListWidget->currentItem()->text().split(' ').last().toInt();
-        setPanelSettings(id, appletsListWidget, thicknessSpinBox,
-                         screenComboBox, stretchCheckBox, shiftSpinBox, topRadioButton,
-                         bottomRadioButton, leftRadioButton, rightRadioButton,
-                         launcherIconSizeSpinBox, bgrImagePathLineEdit,
+        setPanelSettings(id, appletsListWidget, enableAutoHideCheckBox, autoHideIntervalSpinBox,
+                         thicknessSpinBox, screenComboBox, stretchCheckBox, setOnCenterCheckBox,
+                         shiftSpinBox, topRadioButton, bottomRadioButton, leftRadioButton,
+                         rightRadioButton, launcherIconSizeSpinBox, bgrImagePathLineEdit,
                          spacingSpinBox, marginSpinBox, opacitySpinBox);
 
         QDBusConnection bus = QDBusConnection::sessionBus();
@@ -361,6 +393,17 @@ void PanelsPane::setPaneContents() {
         mSaveButton->setVisible(true);
     });
 
+    connect(enableAutoHideCheckBox, &QCheckBox::stateChanged, this, [this, enableAutoHideCheckBox,
+                                                                     autoHideIntervalSpinBox]() {
+        mSaveButton->setVisible(true);
+        autoHideIntervalSpinBox->setEnabled(enableAutoHideCheckBox->isChecked());
+    });
+
+    connect(autoHideIntervalSpinBox, static_cast<void(QSpinBox::*)(int)>(
+                                  &QSpinBox::valueChanged), this, [this]() {
+        mSaveButton->setVisible(true);
+    });
+
     connect(thicknessSpinBox, static_cast<void(QSpinBox::*)(int)>(
                                   &QSpinBox::valueChanged), this, [this]() {
         mSaveButton->setVisible(true);
@@ -371,7 +414,19 @@ void PanelsPane::setPaneContents() {
         mSaveButton->setVisible(true);
     });
 
-    connect(stretchCheckBox, &QCheckBox::stateChanged, this, [this]() {
+    connect(stretchCheckBox, &QCheckBox::stateChanged, this, [this, stretchCheckBox,
+                                                              setOnCenterCheckBox]() {
+        mSaveButton->setVisible(true);
+        if (stretchCheckBox->isChecked()) {
+            setOnCenterCheckBox->setEnabled(false);
+            setOnCenterCheckBox->setChecked(false);
+        }
+        else {
+            setOnCenterCheckBox->setEnabled(true);
+        }
+    });
+
+    connect(setOnCenterCheckBox, &QCheckBox::stateChanged, this, [this]() {
         mSaveButton->setVisible(true);
     });
 
@@ -429,16 +484,16 @@ void PanelsPane::setPaneContents() {
         mSaveButton->setVisible(true);
     });
 
-    connect(mSaveButton, &QPushButton::clicked, this, [this, panelsListWidget, appletsListWidget, thicknessSpinBox,
-                                                      screenComboBox, stretchCheckBox, shiftSpinBox, topRadioButton,
-                                                      bottomRadioButton, leftRadioButton, rightRadioButton,
-                                                      launcherIconSizeSpinBox, bgrImagePathLineEdit,
-                                                      spacingSpinBox, marginSpinBox, opacitySpinBox]() {
+    connect(mSaveButton, &QPushButton::clicked, this, [this, panelsListWidget, appletsListWidget, enableAutoHideCheckBox,
+                                                       autoHideIntervalSpinBox, thicknessSpinBox, screenComboBox, stretchCheckBox,
+                                                       setOnCenterCheckBox, shiftSpinBox, topRadioButton, bottomRadioButton,
+                                                       leftRadioButton, rightRadioButton, launcherIconSizeSpinBox, bgrImagePathLineEdit,
+                                                       spacingSpinBox, marginSpinBox, opacitySpinBox]() {
         int id = panelsListWidget->currentItem()->text().split(' ').last().toInt();
-        prepareToSave(id, appletsListWidget, thicknessSpinBox,
-                      screenComboBox, stretchCheckBox, shiftSpinBox, topRadioButton,
-                      bottomRadioButton, leftRadioButton, rightRadioButton,
-                      launcherIconSizeSpinBox, bgrImagePathLineEdit,
+        prepareToSave(id, appletsListWidget, enableAutoHideCheckBox, autoHideIntervalSpinBox,
+                      thicknessSpinBox, screenComboBox, stretchCheckBox, setOnCenterCheckBox,
+                      shiftSpinBox, topRadioButton, bottomRadioButton, leftRadioButton,
+                      rightRadioButton, launcherIconSizeSpinBox, bgrImagePathLineEdit,
                       spacingSpinBox, marginSpinBox, opacitySpinBox);
         saveConfig();
         mSaveButton->setVisible(false);
@@ -612,9 +667,12 @@ void PanelsPane::setPaneContents() {
 
 void PanelsPane::setPanelSettings(int panelID,
                                   QListWidget* appletsListWidget,
+                                  QCheckBox* enableAutoHideCheckBox,
+                                  QSpinBox* autoHideIntervalSpinBox,
                                   QSpinBox* thicknessSpinBox,
                                   QComboBox* screenComboBox,
                                   QCheckBox* stretchCheckBox,
+                                  QCheckBox* setOnCenterCheckBox,
                                   QSpinBox* shiftSpinBox,
                                   QRadioButton* topRadioButton,
                                   QRadioButton* bottomRadioButton,
@@ -697,6 +755,16 @@ void PanelsPane::setPanelSettings(int panelID,
         }
     }
 
+    // Auto Hide
+    enableAutoHideCheckBox->setChecked(getConfigValue(panelName, "enableAutoHide").toBool());
+    autoHideIntervalSpinBox->setValue(getConfigValue(panelName, "autoHideInterval").toInt());
+    if (enableAutoHideCheckBox->isChecked()) {
+        autoHideIntervalSpinBox->setEnabled(true);
+    }
+    else {
+        autoHideIntervalSpinBox->setEnabled(false);
+    }
+
     // Thickness
     thicknessSpinBox->setValue(getConfigValue(panelName, "thickness").toInt());
 
@@ -712,6 +780,16 @@ void PanelsPane::setPanelSettings(int panelID,
 
     // Stretch to the screen size
     stretchCheckBox->setChecked(getConfigValue(panelName, "expand").toBool());
+
+    // Set On Center
+    setOnCenterCheckBox->setChecked(getConfigValue(panelName, "setOnCenter").toBool());
+    if (!stretchCheckBox->isChecked()) {
+        setOnCenterCheckBox->setEnabled(true);
+    }
+    else {
+        setOnCenterCheckBox->setEnabled(false);
+        setOnCenterCheckBox->setChecked(false);
+    }
 
     // Axis shift
     shiftSpinBox->setValue(getConfigValue(panelName, "shift").toInt());
@@ -754,9 +832,12 @@ void PanelsPane::setPanelSettings(int panelID,
 
 void PanelsPane::prepareToSave(int panelID,
                                QListWidget* appletsListWidget,
+                               QCheckBox* enableAutoHideCheckBox,
+                               QSpinBox* autoHideIntervalSpinBox,
                                QSpinBox* thicknessSpinBox,
                                QComboBox* screenComboBox,
                                QCheckBox* stretchCheckBox,
+                               QCheckBox* setOnCenterCheckBox,
                                QSpinBox* shiftSpinBox,
                                QRadioButton* topRadioButton,
                                QRadioButton* bottomRadioButton,
@@ -785,6 +866,10 @@ void PanelsPane::prepareToSave(int panelID,
     }
     panelObject["applets"] = QJsonValue(applets);
 
+    // Auto Hide
+    panelObject["enableAutoHide"] = QJsonValue(enableAutoHideCheckBox->isChecked());
+    panelObject["autoHideInterval"] = QJsonValue(autoHideIntervalSpinBox->value());
+
     // Thickness
     panelObject["thickness"] = QJsonValue(thicknessSpinBox->value());
 
@@ -798,6 +883,9 @@ void PanelsPane::prepareToSave(int panelID,
 
     // Stretch
     panelObject["expand"] = QJsonValue(stretchCheckBox->isChecked());
+
+    // Set On Center
+    panelObject["setOnCenter"] = QJsonValue(setOnCenterCheckBox->isChecked());
 
     // Axis shift
     panelObject["shift"] = QJsonValue(shiftSpinBox->value());

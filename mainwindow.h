@@ -27,6 +27,7 @@
 #include "panes/keyboardpane.h"
 #include "panes/autostartpane.h"
 #include "panes/panelspane.h"
+#include "panes/soundspane.h"
 
 #include "dialogs/usermenudialog.h"
 #include "dialogs/datetimedialog.h"

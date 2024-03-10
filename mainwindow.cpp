@@ -161,6 +161,16 @@ void MainWindow::createUI(QApplication* app) {
     panelsButton->setMaximumWidth(90);
     personalButtonsLayout->addWidget(panelsButton);
 
+    QToolButton* soundsButton = new QToolButton();
+    soundsButton->setText(tr("Sounds"));
+    soundsButton->setIcon(QIcon::fromTheme("preferences-system-sound"));
+    soundsButton->setIconSize(QSize(32, 32));
+    soundsButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    soundsButton->setAutoRaise(true);
+    soundsButton->setMinimumWidth(90);
+    soundsButton->setMaximumWidth(90);
+    personalButtonsLayout->addWidget(soundsButton);
+
     personalButtonsLayout->addSpacerItem(new QSpacerItem(0, 0,
                                                          QSizePolicy::MinimumExpanding,
                                                          QSizePolicy::Ignored));
@@ -297,6 +307,10 @@ void MainWindow::createUI(QApplication* app) {
         showPane("panels");
     });
 
+    connect(soundsButton, &QToolButton::clicked, this, [this]() {
+        showPane("sounds");
+    });
+
     connect(aboutButton, &QPushButton::clicked, this, [this]() {
         QProcess* process = new QProcess(this);
         process->start("plainAbout", {"--plainControlCenter"});
@@ -349,6 +363,9 @@ void MainWindow::showPane(QString name) {
     }
     else if (!name.compare("autostart")) {
         pane = new AutostartPane(&mCfgObj);
+    }
+    else if (!name.compare("sounds")) {
+        pane = new SoundsPane(&mCfgObj);
     }
 
     pane->setPaneContents();

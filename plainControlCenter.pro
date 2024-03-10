@@ -30,7 +30,8 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     pane.cpp \
-    panes/panelspane.cpp
+    panes/panelspane.cpp \
+    panes/soundspane.cpp
 
 HEADERS += \
     dialog.h \
@@ -53,7 +54,8 @@ HEADERS += \
     panes/keyboardpane.h \
     mainwindow.h \
     pane.h \
-    panes/panelspane.h
+    panes/panelspane.h \
+    panes/soundspane.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

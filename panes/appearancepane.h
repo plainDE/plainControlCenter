@@ -1,7 +1,7 @@
 #ifndef APPEARANCEPANE_H
 #define APPEARANCEPANE_H
 
-#include "pane.h"
+#include "../pane.h"
 
 #include <QJsonObject>
 #include <QHBoxLayout>
@@ -20,7 +20,7 @@ class AppearancePane : public Pane {
 public:
     AppearancePane(QJsonObject* cfgObj,
                    QWidget* parent);
-    virtual void setPaneContents() override;
+    void setPaneContents() override;
     void prepareToSave(QComboBox* iconThemeComboBox,
                        QFontComboBox* fontComboBox,
                        QSpinBox* fontSizeSpinBox,
